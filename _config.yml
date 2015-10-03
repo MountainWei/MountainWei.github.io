@@ -1,19 +1,19 @@
 # Site settings
-title: Hux Blog
+title: Liuv Blog
 header-img: img/home-bg.jpg
 email: huxpro@gmail.com
-description: "一生想做浪漫极客。@Hux黄玄的博客主页、个人网站, 知乎@黄玄／阿里@鬼栈／Front-End／UX Unicorn／Web &amp; Mobile Lover／Motion Design "
+description: "先空着吧，哈哈@LiuV刘威的博客主页、个人网站 ／Front-End／UX Unicorn／Web &amp; Mobile Lover／Motion Design "
 baseurl: ""
-url: "http://huxpro.github.io"
+url: "http://MountainWei.github.io"
 
 
 # SNS settings
 RSS: false
-weibo_username:     huxpro
-zhihu_username:     huxpro
-github_username:    huxpro
+weibo_username:     include_刘威
+zhihu_username:     include_刘威
+github_username:    include_刘威
 #twitter_username:  huxpro
-facebook_username:  huxpro
+#facebook_username:  huxpro
 
 
 # Build settings
@@ -48,8 +48,8 @@ useGoogleAnalysis: true     # TODO
 # Sidebar settings
 sidebar: true
 sidebar-featured-tags: true
-sidebar-about-description: "写写代码，做做设计，看看产品。世界那么大，多玩玩看看。"
-sidebar-avatar: /img/avatar-hux.jpg     # use absolute URL.
+sidebar-about-description: "先空着，哈哈。"
+sidebar-avatar: /img/liuv_pic.jpg     # use absolute URL.
 
 # Friends
 friends: [
