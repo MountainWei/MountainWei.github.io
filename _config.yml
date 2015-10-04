@@ -1,15 +1,15 @@
 # Site settings
 title: Liuv Blog
 header-img: img/home-bg.jpg
-email: huxpro@gmail.com
-description: "先空着吧，哈哈@LiuV刘威的博客主页、个人网站 ／Front-End／UX Unicorn／Web &amp; Mobile Lover／Motion Design "
+email: mountainwei@outlook.com
+description: "还没想好，先放着吧@LiuV刘威的博客主页、个人网站 ／Server-Side／python／Web &amp; Openstack Lover／Cloud Computing "
 baseurl: ""
 url: "http://MountainWei.github.io"
 
 
 # SNS settings
 RSS: false
-weibo_username:     include_刘威
+weibo_username:     liuvblog
 zhihu_username:     ai-er-da-bu-niu
 github_username:    MountainWei
 #twitter_username:  huxpro
@@ -19,7 +19,7 @@ github_username:    MountainWei
 # Build settings
 highlighter: pygments
 permalink: pretty
-paginate: 20
+paginate: 10
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
 anchorjs: true      # if you want to customize anchor. check out line:129 of `post.html`
 
