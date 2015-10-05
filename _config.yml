@@ -6,6 +6,10 @@ description: "还没想好，先放着吧@LiuV刘威的博客主页、个人网�
 baseurl: ""
 url: "http://MountainWei.github.io"
 
+#debug settings
+pygments: true
+safe: true
+auto: true
 
 # SNS settings
 RSS: false
