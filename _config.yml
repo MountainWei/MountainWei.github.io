@@ -2,14 +2,12 @@
 title: Liuv Blog
 header-img: img/home-bg.jpg
 email: mountainwei@outlook.com
-description: "还没想好，先放着吧@LiuV刘威的博客主页、个人网站 ／Server-Side／python／Web &amp; Openstack Lover／Cloud Computing "
+description: "格物致知，诚意正心 @liuv刘威的博客主页、个人网站 ／Server-Side／python／Web &amp; Openstack Lover／Cloud Computing "
 baseurl: ""
 url: "http://MountainWei.github.io"
 
 #debug settings
-pygments: true
 safe: true
-auto: true
 
 # SNS settings
 RSS: false
@@ -52,7 +50,7 @@ useGoogleAnalysis: true     # TODO
 # Sidebar settings
 sidebar: true
 sidebar-featured-tags: true
-sidebar-about-description: "先空着，哈哈。"
+sidebar-about-description: "云中小小鸟。"
 sidebar-avatar: /img/liuv_pic.jpg     # use absolute URL.
 
 # Friends
