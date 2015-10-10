@@ -50,14 +50,14 @@ useGoogleAnalysis: true     # TODO
 # Sidebar settings
 sidebar: true
 sidebar-featured-tags: true
-sidebar-about-description: "云中小小鸟。"
+sidebar-about-description: "我不热爱编程，只是喜欢创造。"
 sidebar-avatar: /img/liuv_pic.jpg     # use absolute URL.
 
 # Friends
 friends: [
     {
-        title: "天镶的博客",
-        href: "http://lingyu.wang/"
+        title: "OpenStack主页",
+        href: "http://openstack.org/"
     },{
         title: "Luke的自留地",
         href: "http://hmqk1995.github.io"
