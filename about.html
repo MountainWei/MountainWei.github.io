@@ -60,11 +60,9 @@ header-img: "img/about-bg.jpg"
 <!-- English Version -->
 <div class="en">
     <blockquote>
-        hai mei zhun bei hao ,jin qing qi dai.
+         hai mei zhun bei hao ,jin qing qi dai.
     </blockquote>
-
 </div>
-
 
 <!-- Handle Language Change -->
 <script type="text/javascript">
@@ -83,16 +81,31 @@ header-img: "img/about-bg.jpg"
 </script>
 
 
-{% if site.useDuoshuo %}
+
+{% if site.duoshuo_username %}
 <!-- 多说评论框 start -->
     <div class="comment">
-        <div class="ds-thread" data-thread-key="{{page.id}}" data-title="{{page.title}}" data-url="{{site.url}}/about/"></div>
+        <div class="ds-thread"
+        {% if site.duoshuo_username == "huxblog" %}
+            data-thread-id="1187623191091085319"
+        {% else %}
+            data-thread-key="{{site.duoshuo_username}}/about"
+        {% endif %}
+
+        data-title="{{page.title}}"
+        data-url="{{site.url}}/about/"></div>
     </div>
 <!-- 多说评论框 end -->
 
+<!-- Duoshuo hacking -->
+<input id="dsUser" type="hidden" value="{{site.duoshuo_username}}"  />
+
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
-var duoshuoQuery = {short_name:"liuvblog"};
+    // dynamic User hacking by Hux
+    var _user = document.getElementById('dsUser').value;
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
     (function() {
         var ds = document.createElement('script');
         ds.type = 'text/javascript';ds.async = true;

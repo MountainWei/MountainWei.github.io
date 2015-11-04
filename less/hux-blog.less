@@ -34,7 +34,7 @@ h1{
 	//font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 h4{
-    font-size: 20px;
+    font-size: 21px;
 }
 a {
 	color: @gray-dark;
@@ -111,6 +111,7 @@ pre,.table-responsive{
 	}
 }
 
+// In the post.
 .post-container{
 	a{
 		color:#337ab7;
@@ -120,8 +121,42 @@ pre,.table-responsive{
 			color: @brand-primary;
 		}
 	}
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		margin: 30px 0 10px;
+	}
+	h5{
+		font-size: 19px;
+		font-weight: 600;
+		color:gray;
+		& + p{
+			margin-top: 5px;
+		}
+	}
+	h6{
+		font-size: 16px;
+		font-weight: 600;
+		color: gray;
+		& + p{
+			margin-top: 5px;
+		}
+	}
 	ul,ol{
 		margin-bottom: 40px;
+		@media screen and (max-width: 768px){
+			&{
+				padding-left: 30px;
+			}
+		}
+		@media screen and (max-width: 500px){
+			&{
+				padding-left: 20px;
+			}
+		}
 	}
 	ol ol, ol ul, ul ol, ul ul{
 		margin-bottom: 5px
@@ -421,6 +456,7 @@ pre,.table-responsive{
 		}
 		> .post-subtitle {
 			font-size: 15px;
+			line-height: 1.3;
 			margin: 0;
 			font-weight: 300;
 			margin-bottom: 10px;
@@ -603,17 +639,18 @@ form .row:first-child .floating-label-form-group {
 
 .pager {
 
-	margin: 20px 0 0;
+	margin: 20px 0 0 !important;
+	padding:0px !important;
 
 	li {
 		> a,
 		> span {
 			.sans-serif;
 			text-transform: uppercase;
-			font-size: 14px;
+			font-size: 13px;
 			font-weight: 800;
 			letter-spacing: 1px;
-			padding: 10px 5px;
+			padding: 10px;
 			background-color: white;
 			border-radius: 0;
 			@media only screen and (min-width: 768px) {
@@ -874,4 +911,54 @@ body {
 }
 #ds-smilies-tooltip ul.ds-smilies-tabs li a {
 	background: white !important;
+}
+
+
+// Hux fullscreen mode in 404.html
+
+.page-fullscreen .intro-header{
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+}
+.page-fullscreen #tag-heading{
+	position: fixed;
+	left: 0;
+	top: 0;
+	padding-bottom: 150px;
+	width: 100%;
+	height: 100%;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+
+	display: -webkit-flex;
+	-webkit-align-items: center;
+	-webkit-justify-content: center;
+	-webkit-flex-direction: column;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+.page-fullscreen footer{
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+	padding-bottom: 20px;
+	opacity: 0.6;
+	color: #fff;
+}
+.page-fullscreen footer .copyright{
+	color: #fff;
+}
+.page-fullscreen footer .copyright a{
+	color: #fff;
+}
+.page-fullscreen footer .copyright a:hover{
+	color: #ddd;
 }

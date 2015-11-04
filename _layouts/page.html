@@ -21,46 +21,25 @@ layout: default
 <div class="container">
 	<div class="row">
         {% if site.sidebar == false %}
-            <!-- NO SIDEBAR -->
+<!-- NO SIDEBAR -->
+    <!-- Post Container -->
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 post-container">
                 {{ content }}
-                <!-- friends -->
-                {% if site.friends %}
-                <div class="sidebar-container">
-                    <h5>FRIENDS</h5>
-                    <ul class="list-inline">
-                        {% for friend in site.friends %}
-                            <li><a href="{{friend.href}}">{{friend.title}}</a></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
             </div>
-        {% else %}
-            <!-- USE SIDEBAR -->
-            <!-- Main -->
-    		<div class="
-                col-lg-8 col-lg-offset-1
-                col-md-8 col-md-offset-1
-                col-sm-10 col-sm-offset-1
-                post-container
-            ">
-    			{{ content }}
-    		</div>
-            <!-- SideBar -->
+    <!-- Sidebar Container -->
             <div class="
-                col-lg-3 col-lg-offset-0
-                col-md-3 col-md-offset-0
-                col-sm-10 col-sm-offset-1
-                sidebar-container
-            ">
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
                 <!-- Featured Tags -->
-                <section >
-                    <hr class="hidden-sm hidden-xs">
+                {% if site.featured-tags %}
+                <section>
+                    <!-- no hr -->
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
         				{% for tag in site.tags %}
-                            {% if tag[1].size > 1 %}
+                            {% if tag[1].size > {{site.featured-condition-size}} %}
                 				<a href="/tags/#{{ tag[0] }}" title="{{ tag[0] }}" rel="{{ tag[1].size }}">
                                     {{ tag[0] }}
                                 </a>
@@ -68,9 +47,60 @@ layout: default
         				{% endfor %}
         			</div>
                 </section>
+                {% endif %}
+
+                <!-- Friends Blog -->
+                {% if site.friends %}
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    {% for friend in site.friends %}
+                        <li><a href="{{friend.href}}">{{friend.title}}</a></li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        {% else %}
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+    			{{ content }}
+    		</div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                {% if site.featured-tags %}
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="{{/tags/ | prepend: site.baseurl }}">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        {% for tag in site.tags %}
+                            {% if tag[1].size > {{site.featured-condition-size}} %}
+                                <a href="/tags/#{{ tag[0] }}" title="{{ tag[0] }}" rel="{{ tag[1].size }}">
+                                    {{ tag[0] }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+
                 <!-- Short About -->
                 <section class="visible-md visible-lg">
-                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <hr><h5><a href="{{/about/ | prepend: site.baseurl }}">ABOUT ME</a></h5>
                     <div class="short-about">
                         {% if site.sidebar-avatar %}
                             <img src="{{site.sidebar-avatar}}" />

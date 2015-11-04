@@ -1,31 +1,31 @@
 # Site settings
 title: Liuv Blog
+SEOTitle: 刘威的博客 | Liuv Blog
 header-img: img/home-bg.jpg
 email: mountainwei@outlook.com
 description: "格物致知，诚意正心 @liuv刘威的博客主页、个人网站 ／Server-Side／python／Web &amp; Openstack Lover／Cloud Computing "
-baseurl: ""
-url: "http://MountainWei.github.io"
+keyword: "刘威, 艾尔大不牛, Liuv, @include_刘威, 刘威的博客, Liuv Blog, 博客, 个人网站, 互联网, 云计算, OpenStack, python, 安全"
+url: "http://liuvblog.com"              # your host, for absolute URL
+baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
-#debug settings
-safe: true
 
 # SNS settings
 RSS: false
 weibo_username:     liuvblog
 zhihu_username:     ai-er-da-bu-niu
 github_username:    MountainWei
-#twitter_username:  huxpro
-#facebook_username:  huxpro
 
+#debug settings
+safe: true
 
 # Build settings
 port: 4001
 highlighter: pygments
 permalink: pretty
-gems: [jekyll-paginate]
 paginate: 10
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
-anchorjs: true      # if you want to customize anchor. check out line:129 of `post.html`
+anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+
 
 # Markdown settings
 # replace redcarpet to kramdown,
@@ -33,27 +33,38 @@ anchorjs: true      # if you want to customize anchor. check out line:129 of `po
 # document: http://jekyllrb.com/docs/configuration/#kramdown
 markdown: kramdown
 kramdown:
-  input: GFM        # use Github Flavored Markdown !important
+  input: GFM                            # use Github Flavored Markdown !important
+
 
 
 # Duoshuo settings
-# please set your own DuoShuo account in `post.html` and `about.html`
-useDuoshuo: true    # use both Comment and Share
-useShare: true      # use Comment only. seeing the Share component is depend on Comment so we can NOT use share only.
+duoshuo_username: liuvblog
+# Share component is depend on Comment so we can NOT use share only.
+duoshuo_share: true                     # set to false if you want to use Comment without Sharing
 
 
-# Todo: Analysis settings
-# Please set your own analysis account in `head.html`(Baidu) and `default.html`(QQ)
-useBaiduAnalysis: true
-useTencentAnalysis: true
-useGoogleAnalysis: true     # TODO
+
+# Analytics settings
+# Baidu Analytics
+#ba_track_id: 4cc1f2d8f3067386cc5cdb626a202900
+
+# Google Analytics
+#ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
+#ga_domain: huangxuan.me
+
 
 
 # Sidebar settings
-sidebar: true
-sidebar-featured-tags: true
-sidebar-about-description: "我不热爱编程，只是喜欢创造。"
+sidebar: true                           # whether or not using Sidebar.
+sidebar-about-description: "不忘初心，方得始终。"
 sidebar-avatar: /img/liuv_pic.jpg     # use absolute URL.
+
+
+# Featured Tags
+featured-tags: true                     # whether or not using Feature-Tags
+featured-condition-size: 0              # A tag will be featured if the size of it is more than this condition value
+
+
 
 # Friends
 friends: [
@@ -70,4 +81,5 @@ friends: [
         title: "veotax's Blog",
         href: "http://blog.csdn.net/hsluoyc/"
     }
+
 ]
