@@ -19,8 +19,10 @@ github_username:    MountainWei
 
 
 # Build settings
+port: 4001
 highlighter: pygments
 permalink: pretty
+gems: [jekyll-paginate]
 paginate: 10
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
 anchorjs: true      # if you want to customize anchor. check out line:129 of `post.html`
