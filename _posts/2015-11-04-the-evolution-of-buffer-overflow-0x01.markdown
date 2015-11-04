@@ -4,7 +4,7 @@ title:      "The Evolution of Buffer Overflow 0x01"
 subtitle:   "缓冲区溢出技术"
 date:       2015-11-04 17:00:00
 author:     "Liuv"
-header-img: "img/post-bg-2015-11-04"
+header-img: "img/post-bg-2015-11-04.jpg"
 tags:
     - 随笔
 ---

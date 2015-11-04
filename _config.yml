@@ -66,5 +66,8 @@ friends: [
     },{
         title: "SmdCn's Blog",
         href: "http://blog.smdcn.net"
+    },{
+        title: "veotax's Blog",
+        href: "http://blog.csdn.net/hsluoyc/"
     }
 ]
