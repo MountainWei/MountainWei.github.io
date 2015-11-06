@@ -75,11 +75,10 @@ friends: [
         title: "onestraw",
         href: "http://onestraw.net"
     },{
-        title: "SmdCn's Blog",
-        href: "http://blog.smdcn.net"
-    },{
         title: "veotax's Blog",
         href: "http://blog.csdn.net/hsluoyc/"
+    },{
+        title: "ZyZhu's Blog",
+        href: "http://blog.sina.com.cn/u/2413321093"
     }
-
 ]
