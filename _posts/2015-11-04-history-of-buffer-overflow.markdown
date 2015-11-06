@@ -43,7 +43,7 @@ tags:
     </li>
 </ul>
 下图是linux中的地址空间格局。
-![img](/img/in-post/post-memory-layout-1.jpg)
+![img](/img/in-post/post2-memory-layout.jpg)
 <br>高级语言写出的程序经过编译链接，最终会变成可执行文件。当可执行文件被装载运行后，就成了所谓的进程。可执行文件代码段中包含的二进制级别的机器代码会被装入内存的代码区。处理器将到内存的这个区域一条一条地取出指令和操作数，并送入运算逻辑单元进行运算。如果代码中请求开辟动态内存，则会在内存的堆区分配一块大小合适的区域返回给代码区的代码使用。当函数调用发生时，函数的调用关系等信息会动态地保存在内存的栈区，以供处理器在执行完被调用函数的代码时，返回母函数。
 <br>当数据存储时，分为常量和变量两种情况：
 <ul>
@@ -77,12 +77,79 @@ tags:
 <br>接下来继续介绍几个与栈有关的汇编指令。
 <ul>
     <li>
-        <b>POP :</b>出栈操作。for example:"pop ax"，意为将操作数的值压入栈顶，同时esp-4。
+        <b>POP :</b>出栈操作。for example:"pop ax"，意为将栈顶中的data取出放到ax中，同时esp+4（栈的增长方向是由高地址向低地址）。
+    </li>
+    <li>
+        <b>PUSH:</b>压栈操作。for example:"push bx",意为将bx中的data压入栈顶，同时esp-4。
+    </li>
+    <li>
+        <b>RET:</b>返回操作。将ESP指针所指内存中的data放入EIP中，即跳转到该地址处执行。
     </li>
 </ul>
+<br>接下来介绍一下栈帧（stack frame)的概念。函数调用经常是嵌套的，在同一时刻，堆栈中会有多个函数的信息。每个未完成运行的函数占用一个独立的连续区域，称作栈帧。栈帧是堆栈的逻辑片段，当调用函数时逻辑栈帧被压入堆栈, 当函数返回时逻辑栈帧被从堆栈中弹出。栈帧存放着函数参数，局部变量及恢复前一栈帧所需要的数据（如返回地址、前栈帧EBP指针）等。
+<br>编译器利用栈帧，使得函数参数和函数中局部变量的分配与释放对程序员透明。编译器将控制权移交函数本身之前，插入特定代码将函数参数压入栈帧中，并分配足够的内存空间用于存放函数中的局部变量。使用栈帧的一个好处是使得递归变为可能，因为对函数的每次递归调用，都会分配给该函数一个新的栈帧，这样就巧妙地隔离当前调用与上次调用。
+<br>栈帧的边界由栈帧基地址指针EBP和堆栈指针ESP界定(指针存放在相应寄存器中)。EBP指向当前栈帧底部(高地址)，在当前栈帧内位置固定；ESP指向当前栈帧顶部(低地址)，当程序执行时ESP会随着数据的入栈和出栈而移动。因此函数中对大部分数据的访问都基于EBP进行。
 
+说了这么多，用一张图将函数嵌套调用时的栈帧结构描述一下（这是我在网上找的一张图）。
+![img](/img/in-post/post2-stack-frame.jpg)
 
+<br>好了，理论说了一大堆，现在就以一个简单的C程序为例来具体说明函调调用过程中的栈的变化。这个程序结构很简单，由一个main函数和func子函数组成。首先，main执行，main各个参数从右向左逐步压入栈中，最后压入返回地址。源代码如下（第一次用pygments的代码高亮，代码很酷有木有！）
+{% highlight c++ linenos %}
+#include <stdio.h>
 
+int func(int param1 ,int param2,int param3)
+{
+    int var1 = param1;
+    int var2 = param2;
+    int var3 = param3;
+    
+    return var1;
+}
+ 
+int main(int argc, char* argv[])
+{
+    int param1 = 1;
+    int param2 = 2;
+    int param3 = 3;
+    
+    result = func(param1,param2,param3);
+ 
+    return 0; 
+}
+{% endhighlight %}
+首先是执行main函数，main各个参数从右向左逐步压入栈中，最后压入返回地址。然后，从现在开始，main函数开始创建自己的栈帧。压入上一个栈帧的EBP值，依次压入局部变量param1、param2、param3。让我们来看看当前栈中的情况是什么样子。
+![img](/img/in-post/post2-function-stack-1.jpg)
+现在程序继续运行到19行，开始调用func，终于到重头戏了!在进入func函数前，会先执行以下四条汇编指令（假设执行函数前ESP指针为NN）：
+{% highlight c++ linenos %}
+push   param3    //参数3入栈, ESP -= 4h , ESP = NN - 4h
+push   param2    //参数2入栈, ESP -= 4h , ESP = NN - 8h
+push   param1    //参数1入栈，ESP -= 4h , ESP = NN - 0Ch
+call   func      //返回地址入栈， ESP -= 4h, ESP = NN - 10h
+{% endhighlight %}
+接下来就正式进入func函数中执行，即func开始创建自己的栈帧！此时会先执行以下两条经典的汇编指令，之所以经典，是因为所有的栈帧建立都会先执行这两条指令来保存上一个栈帧的EBP指针。
+{% highlight c++ linenos%}
+push   ebp       //保护main函数栈帧的EBP指针。EBP入栈，ESP-=4h, ESP = NN - 14h
+mov    ebp, esp  //设置EBP指针指向栈顶 NN-14h，即此时EBP = NN - 14h
+{% endhighlight %}
+然后是func函数中的局部变量赋值操作，将传进来的实参依次赋值给局部变量var1、var2、var3。以var1为例来说明赋值过程，该过程对应的汇编指令为以下两句:
+{% highlight c++ linenos%}
+mov 0x8(%ebp),%eax   //将[EBP+0x8]地址里的内容赋给EAX,改地址中正好是刚才存储param1的地址
+mov %eax,-0x4(%ebp)  //把EAX的中的值放到[EBP-0x4]这个地址里，即把EAX值赋给var1
+{% endhighlight %}
+现在我们来看看所有局部变量都存储完后栈中的情况。
+![img](/img/in-post/post2-function-stack-2.jpg)
+接着执行第9行的返回语句，将变量var1的值返回。在intel 32位体系结构中，函数返回值通常保存在寄存器eax中。因此，19行对应的汇编语句为：
+{% highlight c++ linenos%}
+mov  -0x4(%ebp),%eax  //把[EBP-0x4]地址里的内容放入EAX中，而[EBP-0x4]地址中存储的就是变量var1
+{% endhighlight %}
+此时，func函数执行完毕，接下来就该释放func函数栈帧了。在本例中，释放顺序为局部变量var3，var2，var1依次出栈，EBP恢复原值，返回地址出栈，找到原执行地址，param1，param2，param3依次出栈，函数调用执行完毕。
+{% highlight c++ linenos%}
+add    esp, 10        //释放局部变量, ESP+=10h, ESP = NN-14h
+pop    ebp            //出栈,恢复EBP, ESP+=4h, ESP = NN-10h
+ret    10             //ret返回,将返回地址放入EIP中,ESP+=10h, ESP=NN, 恢复进入函数前的栈.
+{% endhighlight %}
+<br>好啦，总算写完了，顺便说一下，在64位系统中，传入函数的实参不再存储在栈里了，而是按规定存储在特定的寄存器中，但是基本原理都是一样的。下一篇博客就要开始正式介绍缓冲区溢出了。
+<br>注：这篇博客是我在网上查阅了许多相关内容的博客后进行的总结，中间很多都是引用这些博客的内容，当然，我也加入了很多自己原创性的内容，欢迎拍砖。哈哈。
 
 
 
