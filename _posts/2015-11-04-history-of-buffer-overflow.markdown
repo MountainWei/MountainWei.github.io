@@ -94,47 +94,49 @@ tags:
 ![img](/img/in-post/post2-stack-frame.jpg)
 
 <br>好了，理论说了一大堆，现在就以一个简单的C程序为例来具体说明函调调用过程中的栈的变化。这个程序结构很简单，由一个main函数和func子函数组成。首先，main执行，main各个参数从右向左逐步压入栈中，最后压入返回地址。源代码如下（第一次用pygments的代码高亮，代码很酷有木有！）
-{% highlight c++ linenos %}
+{% highlight c linenos %}
 #include <stdio.h>
 
-int func(int param1 ,int param2,int param3)
-{
+int func(int param1 ,int param2,int param3){
     int var1 = param1;
     int var2 = param2;
     int var3 = param3;
-    
+   
     return var1;
 }
  
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]){
     int param1 = 1;
     int param2 = 2;
     int param3 = 3;
     
-    result = func(param1,param2,param3);
+    int result = func(param1,param2,param3);
  
     return 0; 
 }
 {% endhighlight %}
 首先是执行main函数，main各个参数从右向左逐步压入栈中，最后压入返回地址。然后，从现在开始，main函数开始创建自己的栈帧。压入上一个栈帧的EBP值，依次压入局部变量param1、param2、param3。让我们来看看当前栈中的情况是什么样子。
 ![img](/img/in-post/post2-function-stack-1.jpg)
-现在程序继续运行到19行，开始调用func，终于到重头戏了!在进入func函数前，会先执行以下四条汇编指令（假设执行函数前ESP指针为NN）：
+现在程序继续运行到16行，开始调用func，终于到重头戏了!在进入func函数前，会先执行以下九条汇编指令（假设执行函数前ESP指针为NN）：
 {% highlight c++ linenos %}
-push   param3    //参数3入栈, ESP -= 4h , ESP = NN - 4h
-push   param2    //参数2入栈, ESP -= 4h , ESP = NN - 8h
-push   param1    //参数1入栈，ESP -= 4h , ESP = NN - 0Ch
-call   func      //返回地址入栈， ESP -= 4h, ESP = NN - 10h
+mov    0x14(%esp),%eax  //将[ESP-14h]中的内容赋到EAX寄存器中
+mov    %eax,0x8(%esp)   //将EAX寄存器中的内容放入地址[ESP+8h]内存中，即将param3入栈,地址为NN+8h
+mov    0x18(%esp),%eax  //将[ESP-18h]中的内容赋到EAX寄存器中
+mov    %eax,0x4(%esp)   //将EAX寄存器中的内容放入地址[ESP+4h]内存中，即将param2入栈,地址为NN+4h
+mov    0x1c(%esp),%eax  //将[ESP-1Ch]中的内容赋到EAX寄存器中
+mov    %eax,(%esp)      //将EAX寄存器中的内容放入地址[ESP]内存中，即将param1入栈,地址为NN
+call   0x401334 <func>  //调用func函数，call指令会将当前返回地址入栈，ESP-=4h,ESP = NN - 4h
 {% endhighlight %}
 接下来就正式进入func函数中执行，即func开始创建自己的栈帧！此时会先执行以下两条经典的汇编指令，之所以经典，是因为所有的栈帧建立都会先执行这两条指令来保存上一个栈帧的EBP指针。
 {% highlight c++ linenos%}
-push   ebp       //保护main函数栈帧的EBP指针。EBP入栈，ESP-=4h, ESP = NN - 14h
-mov    ebp, esp  //设置EBP指针指向栈顶 NN-14h，即此时EBP = NN - 14h
+push   %ebp       //保护main函数栈帧的EBP指针。EBP入栈，ESP-=4h, ESP = NN - 8h
+mov    %esp,%ebp  //设置EBP指针指向当前栈顶，即此时EBP = ESP= NN - 8h
 {% endhighlight %}
-然后是func函数中的局部变量赋值操作，将传进来的实参依次赋值给局部变量var1、var2、var3。以var1为例来说明赋值过程，该过程对应的汇编指令为以下两句:
+然后是func函数中的局部变量赋值操作，将传进来的实参依次赋值给局部变量var1、var2、var3。以var1为例来说明赋值过程，该过程对应的汇编指令为以下几句:
 {% highlight c++ linenos%}
-mov 0x8(%ebp),%eax   //将[EBP+0x8]地址里的内容赋给EAX,改地址中正好是刚才存储param1的地址
-mov %eax,-0x4(%ebp)  //把EAX的中的值放到[EBP-0x4]这个地址里，即把EAX值赋给var1
+sub    $0x10,%esp      //ESP指针往低地址偏移10h个单位，为后面局部变量入栈预留位置
+mov    0x8(%ebp),%eax  //将[EBP+8h]地址里的内容赋给EAX,该地址中正好是刚才存储param1的地址
+mov    %eax,-0x4(%ebp) //把EAX的中的值放到[EBP-4h]这个地址里，即把EAX值赋给var1
 {% endhighlight %}
 现在我们来看看所有局部变量都存储完后栈中的情况。
 ![img](/img/in-post/post2-function-stack-2.jpg)
@@ -144,10 +146,32 @@ mov  -0x4(%ebp),%eax  //把[EBP-0x4]地址里的内容放入EAX中，而[EBP-0x4
 {% endhighlight %}
 此时，func函数执行完毕，接下来就该释放func函数栈帧了。在本例中，释放顺序为局部变量var3，var2，var1依次出栈，EBP恢复原值，返回地址出栈，找到原执行地址，param1，param2，param3依次出栈，函数调用执行完毕。
 {% highlight c++ linenos%}
-add    esp, 10        //释放局部变量, ESP+=10h, ESP = NN-14h
-pop    ebp            //出栈,恢复EBP, ESP+=4h, ESP = NN-10h
-ret    10             //ret返回,将返回地址放入EIP中,ESP+=10h, ESP=NN, 恢复进入函数前的栈.
+leave   //相当于Set ESP to EBP, then pop EBP，即ESP回到EBP处，然后EBP出栈，此时ESP=NN-4h,指向返回地址
+ret     //相等于POP EIP，将ESP指向地址中存储的返回地址放入EIP寄存器中，程序执行流回到main函数中
 {% endhighlight %}
+现在完整的看一下func函数调用过程中所有的汇编指令，该结果是我在本机上的执行结果，IDE为codeblocks。
+{% highlight c++ %}
+3  	int func(int param1 ,int param2,int param3){
+0x00401334	push   %ebp
+0x00401335	mov    %esp,%ebp
+0x00401337	sub    $0x10,%esp
+4  	    int var1 = param1;
+0x0040133A	mov    0x8(%ebp),%eax
+0x0040133D	mov    %eax,-0x4(%ebp)
+5  	    int var2 = param2;
+0x00401340	mov    0xc(%ebp),%eax
+0x00401343	mov    %eax,-0x8(%ebp)
+6  	    int var3 = param3;
+0x00401346	mov    0x10(%ebp),%eax
+0x00401349	mov    %eax,-0xc(%ebp)
+8  	    return var1;
+0x0040134C	mov    -0x4(%ebp),%eax
+9  	}
+0x0040134F	leave
+0x00401350	ret
+{% endhighlight %}
+最后，来看一下func函数的栈帧信息，可以得到保存的EBP和EIP值，以及调用func的实参和func函数内的局部变量的信息。
+![img](/img/in-post/post2-function-stack-3.jpg)
 <br>好啦，总算写完了，顺便说一下，在64位系统中，传入函数的实参不再存储在栈里了，而是按规定存储在特定的寄存器中，但是基本原理都是一样的。下一篇博客就要开始正式介绍缓冲区溢出了。
 <br>注：这篇博客是我在网上查阅了许多相关内容的博客后进行的总结，中间很多都是引用这些博客的内容，当然，我也加入了很多自己原创性的内容，欢迎拍砖。哈哈。
 
