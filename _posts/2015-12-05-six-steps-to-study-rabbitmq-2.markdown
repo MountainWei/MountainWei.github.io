@@ -2,7 +2,7 @@
 layout:     post
 title:      "六步学习RabbitMQ"
 subtitle:   " Part II  Work Queues"
-date:       2015-12-05 23:00:00
+date:       2015-12-05 18:00:00
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-05.jpg"
 tags:
