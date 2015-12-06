@@ -51,7 +51,7 @@ header-img: "img/about-bg.jpg"
     做过的一些东西，右转<a href="/portfolio"> Portfolio 👉 </a>
     <br>
     <br>
-    最后附上认真版的简历:
+    一些想成为的角色:
     <ul>
         <li> Cloud Computing Development </li>
         <li> OpenStack Developer</li>
@@ -111,19 +111,6 @@ header-img: "img/about-bg.jpg"
 
 {% if site.duoshuo_username %}
 <!-- 多说评论框 start -->
-<<<<<<< HEAD
-    <div class="comment">
-        <div class="ds-thread"
-        {% if site.duoshuo_username == "huxblog" %}
-            data-thread-id="1187623191091085319"
-        {% else %}
-            data-thread-key="{{site.duoshuo_username}}/about"
-        {% endif %}
-
-        data-title="{{page.title}}"
-        data-url="{{site.url}}/about/"></div>
-    </div>
-=======
 <div class="comment">
     <div class="ds-thread"
     {% if site.duoshuo_username == "huxblog" %}
@@ -135,7 +122,6 @@ header-img: "img/about-bg.jpg"
     data-title="{{page.title}}"
     data-url="{{site.url}}/about/"></div>
 </div>
->>>>>>> 9049e6d0d046787eff351e35620b07a48303a020
 <!-- 多说评论框 end -->
 
 <!-- Duoshuo hacking -->
@@ -144,12 +130,8 @@ header-img: "img/about-bg.jpg"
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
     // dynamic User hacking by Hux
-<<<<<<< HEAD
-    var _user = document.getElementById('dsUser').value;
-=======
     var _user = '{{site.duoshuo_username}}';
 
->>>>>>> 9049e6d0d046787eff351e35620b07a48303a020
     // duoshuo comment query.
     var duoshuoQuery = {short_name: _user };
     (function() {
