@@ -8,6 +8,7 @@ keyword: "刘威, 艾尔大不牛, Liuv, @include_刘威, 刘威的博客, Liuv 
 url: "http://liuvblog.com"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
+
 # SNS settings
 RSS: false
 weibo_username:     liuvblog
@@ -17,7 +18,6 @@ github_username:    MountainWei
 #debug settings
 safe: true
 
-
 # Build settings
 port: 4001
 highlighter: pygments
@@ -25,6 +25,7 @@ permalink: pretty
 paginate: 10
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+
 
 # Markdown settings
 # replace redcarpet to kramdown,
@@ -36,14 +37,12 @@ kramdown:
 
 
 
-# Disqus settings
-#disqus_username: _your_disqus_short_name_
-
 # Duoshuo settings
 duoshuo_username: liuvblog
-
 # Share component is depend on Comment so we can NOT use share only.
 duoshuo_share: true                     # set to false if you want to use Comment without Sharing
+
+
 
 # Analytics settings
 # Baidu Analytics
@@ -53,15 +52,19 @@ duoshuo_share: true                     # set to false if you want to use Commen
 #ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
 #ga_domain: huangxuan.me
 
+
+
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "不忘初心，方得始终。"
 sidebar-avatar: /img/liuv_pic.jpg     # use absolute URL.
 
+
 # Featured Tags
 featured-tags: true                     # whether or not using Feature-Tags
-
 featured-condition-size: 0              # A tag will be featured if the size of it is more than this condition value
+
+
 
 # Friends
 friends: [

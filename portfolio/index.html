@@ -7,11 +7,10 @@ layout: default
 <html class="no-js">
 	<head>
 		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Hux - Timeline </title>
-		<link rel="stylesheet" type="text/css" href="css/default.css" />
-		<link rel="stylesheet" type="text/css" href="css/component.css" />
+		<title>Hux - Timeline</title>
+		<link rel="stylesheet" type="text/css" href="css/timeline.css" />
 		<script src="js/modernizr.custom.js"></script>
 	</head>
 	<body>
@@ -71,8 +70,6 @@ layout: default
 								<li>Title : Openstack工程师 Intern </li>
 								<li class="skill">
 									<span class="cbp_tmicon-phone"></span>
-									<span class="cbp_tmicon-html"></span>
-									<span class="fa fa-css3"></span>
 									<span><b>JS</b></span>
 									<span class="link"><a target="_blank" href="http://vmware.com">VMWare</a></span>
 								</li>
@@ -140,7 +137,7 @@ layout: default
 								</li>
 							</ul>
 						</div>
-					</li>
+					</li>-->
 					<li>
 						<time class="cbp_tmtime">
 							<span>PKU</span>
@@ -183,6 +180,7 @@ layout: default
 							</ul>
 						</div>
 					</li>
+					{% if site.duoshuo_username %}
 					<li>
 						<time class="cbp_tmtime">
 							<span>CSU</span>
@@ -204,9 +202,30 @@ layout: default
 								</li>
 							</ul>
 						</div>
-					</li>
+					</li> 
+					{% endif %}
 				</ul>
 			</div>
 		</div>
+
+		{% if site.duoshuo_username %}
+		<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+		<script type="text/javascript">
+		    // dynamic User by Hux
+		    var _user = '{{site.duoshuo_username}}';
+
+		    // duoshuo comment query.
+		    var duoshuoQuery = {short_name: _user };
+		    (function() {
+		        var ds = document.createElement('script');
+		        ds.type = 'text/javascript';ds.async = true;
+		        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		        ds.charset = 'UTF-8';
+		        (document.getElementsByTagName('head')[0]
+		         || document.getElementsByTagName('body')[0]).appendChild(ds);
+		    })();
+		</script>
+		<!-- 多说公共JS代码 end -->
+		{% endif %}
 	</body>
 </html>

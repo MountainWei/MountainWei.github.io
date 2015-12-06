@@ -1,1 +1,1 @@
-liuv blog _v1.5
+liuv blog _v1.5.2
