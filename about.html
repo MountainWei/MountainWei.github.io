@@ -48,7 +48,10 @@ header-img: "img/about-bg.jpg"
         <li><a href="{{site.baseUrl}}/attach/2015_Liuv_DEV_cn.pdf"> 2015_Liuv_DEV_cn </a></li>
     </ul>
 
-    一些期待成为的角色:
+    做过的一些东西，右转<a href="/portfolio"> Portfolio 👉 </a>
+    <br>
+    <br>
+    一些想成为的角色:
     <ul>
         <li> Cloud Computing Development </li>
         <li> OpenStack Developer</li>
@@ -66,35 +69,59 @@ header-img: "img/about-bg.jpg"
 
 <!-- Handle Language Change -->
 <script type="text/javascript">
+    // get nodes
     var $zh = document.querySelector(".zh");
     var $en = document.querySelector(".en");
-    function onLanChange(index){
-        if(index == 0){
-            $zh.style.display = "block";
-            $en.style.display = "none";
-        }else{
+    var $select = document.querySelector("select");
+
+    // bind hashchange event
+    window.addEventListener('hashchange', _render);
+
+    // handle render
+    function _render(){
+        var _hash = window.location.hash;
+        // en
+        if(_hash == "#en"){
+            $select.selectedIndex = 1;
             $en.style.display = "block";
             $zh.style.display = "none";
+        // zh by default
+        }else{
+            // not trigger onChange, otherwise cause a loop call.
+            $select.selectedIndex = 0;
+            $zh.style.display = "block";
+            $en.style.display = "none";
         }
     }
-    onLanChange(0);
+
+    // handle select change
+    function onLanChange(index){
+        if(index == 0){
+            window.location.hash = "#zh"
+        }else{
+            window.location.hash = "#en"
+        }
+    }
+
+    // init
+    _render();
 </script>
 
 
 
 {% if site.duoshuo_username %}
 <!-- 多说评论框 start -->
-    <div class="comment">
-        <div class="ds-thread"
-        {% if site.duoshuo_username == "huxblog" %}
-            data-thread-id="1187623191091085319"
-        {% else %}
-            data-thread-key="{{site.duoshuo_username}}/about"
-        {% endif %}
+<div class="comment">
+    <div class="ds-thread"
+    {% if site.duoshuo_username == "huxblog" %}
+        data-thread-id="1187623191091085319"
+    {% else %}
+        data-thread-key="{{site.duoshuo_username}}/about"
+    {% endif %}
 
-        data-title="{{page.title}}"
-        data-url="{{site.url}}/about/"></div>
-    </div>
+    data-title="{{page.title}}"
+    data-url="{{site.url}}/about/"></div>
+</div>
 <!-- 多说评论框 end -->
 
 <!-- Duoshuo hacking -->
@@ -103,7 +130,8 @@ header-img: "img/about-bg.jpg"
 <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 <script type="text/javascript">
     // dynamic User hacking by Hux
-    var _user = document.getElementById('dsUser').value;
+    var _user = '{{site.duoshuo_username}}';
+
     // duoshuo comment query.
     var duoshuoQuery = {short_name: _user };
     (function() {
@@ -116,4 +144,30 @@ header-img: "img/about-bg.jpg"
     })();
 </script>
 <!-- 多说公共JS代码 end -->
+{% endif %}
+
+
+{% if site.disqus_username %}
+<!-- disqus 评论框 start -->
+<div class="comment">
+    <div id="disqus_thread" class="disqus-thread">
+
+    </div>
+</div>
+<!-- disqus 评论框 end -->
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "{{site.disqus_username}}";
+    var disqus_identifier = "{{site.disqus_username}}/{{page.url}}";
+    var disqus_url = "{{site.url}}{{page.url}}";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
 {% endif %}
