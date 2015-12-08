@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "六步学习RabbitMQ"
-subtitle:   " Part 1  Hello World!"
+subtitle:   " Step 1  Hello World!"
 date:       2015-12-05 17:00:00
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-05.jpg"

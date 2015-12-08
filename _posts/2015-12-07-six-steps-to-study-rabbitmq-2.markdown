@@ -1,8 +1,8 @@
 ---
 layout:     post
 title:      "六步学习RabbitMQ"
-subtitle:   " Part II  Work Queues"
-date:       2015-12-05 19:00:00
+subtitle:   " Step 2  Work Queues"
+date:       2015-12-07 19:00:00
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-05.jpg"
 tags:
@@ -13,6 +13,7 @@ tags:
 >  OpenStack架构中采用了异步消息模型来实现同一组件内不同服务之间的通信，默认使用RabbitMQ作为消息代理中间件。因此，掌握RabbitMQ是理解OpenStack工作原理的基础。
 
 ## 0x01 前言
+<br>在上一篇博客中，我们实现了一个简单的Hello World程序，Producer发送Hello World字符串到消息队列中，然后Consumer从消息队列中取出并显示在屏幕上。
 <br>自从上篇博客发布后，嗖就一个月过去了，本来想弄的缓冲区溢出的专题也因为太懒而没弄了。想了想自己的主要方向还是OpenStack，缓冲区溢出纯属个人兴趣，于是决定关于缓冲区溢出的专题先放放，重心还是回到OpenStack上面来。
 <p>
 这几个月一直在调研OpenStack中的工作机制，打算自己做一个小项目。之前也看过keystone、nova中的一些源码，像用户认证流程、虚拟机的创建过程等都能理解。
