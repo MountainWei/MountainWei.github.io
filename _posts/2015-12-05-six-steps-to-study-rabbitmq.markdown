@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "六步学习RabbitMQ"
+title:      "六步学习RabbitMQ(一)"
 subtitle:   " Step 1  Hello World!"
 date:       2015-12-05 17:00:00
 author:     "Liuv"

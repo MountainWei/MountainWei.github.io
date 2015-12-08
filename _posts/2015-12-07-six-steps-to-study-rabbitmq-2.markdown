@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "六步学习RabbitMQ"
+title:      "六步学习RabbitMQ（二）"
 subtitle:   " Step 2  Work Queues"
 date:       2015-12-07 19:00:00
 author:     "Liuv"
