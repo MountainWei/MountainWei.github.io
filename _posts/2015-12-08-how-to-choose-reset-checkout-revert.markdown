@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "【转载】git中的代码回滚"
-subtitle:   " Reset、Checkout、Reveert命令的选择"
+subtitle:   " Reset、Checkout、Revert命令的选择"
 date:       2015-12-08 13:00:00
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-08.jpg"
