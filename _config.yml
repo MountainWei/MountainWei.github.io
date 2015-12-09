@@ -77,5 +77,8 @@ friends: [
     },{
         title: "ZyZhu's Blog",
         href: "http://blog.sina.com.cn/u/2413321093"
+    },{
+        title: "lab",
+        href: "http://osvt.net/"
     }
 ]
