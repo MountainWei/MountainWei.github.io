@@ -2,7 +2,7 @@
 layout:     post
 title:      "Kombu学习笔记（二）"
 subtitle:   " Part II  Connections，Producers和Consumers对象"
-date:       2015-12-10 18:00:00
+date:       2015-12-10 23:00:00
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-05.jpg"
 tags:
@@ -98,33 +98,43 @@ Connection类支持的其他参数列表如下,我就不一一翻译了：
 3. amqp：首先会尝试用librabbitmq去连接rabbitmq，如果失败则再使用pyamqp去连接
 4. qpid：使用纯python库——qpid.messaging来与broker进行连接，随着Kombu一起被安装。Qpid库虽然也使用的是amqp，但是针对Qpid broker的一些特点作了扩展。
 
-- Producers: 发送消息给exchange
-- Exchanges: 用于路由消息（消息发给exchange，exchange发给对应的queue）。路由就是比较routing-key（这个message提供）和binding-key（这个queue注册到exchange的时候提供）。使用时，需要指定exchange的名称和类型（direct，topic和fanout）。可以发现，和RabbitMQ中的exchange概念是一样的。
-- Consumers: consumer需要声明一个queue，并将queue与指定的exchange绑定，然后从queue里面接收消息。
-- Queues: 接收exchange发过来的消息
-- Routing keys: 每个消息在发送时都会声明一个routing_key。routing_key的含义依赖于exchange的类型。一般说来，在AMQP标准里定义了四种默认的exchange类型，此外，vendor还可以自定义exchange的类型。但是，我们下面只关注AMQP 0.8版本中定义的三种默认exchange类型，也是最常用的三类exchange。
+#### Producers
+Producers是消息的发送者，其初始化方法为：
 
-	- Direct exchange: 如果message的routing_key和某个consumer中的routing_key相同，就会把消息发送给这个consumer监听的queue中。
-	- Fan-out exchange: 广播模式。exchange将收到的message发送到所有与之绑定的queue中。
-	- Topic exchange: 该类型exchange会将message发送到与之routing_key类型相匹配的queue中。routing_key由一系列“.”隔开的word组成，“*”代表匹配任何word，“#”代表匹配0个或多个word，类似于正则表达式。
+```
+ class kombu.Producer(channel, exchange=None, routing_key=None, serializer=None, auto_declare=None, compression=None, on_return=None)
+```
+构造函数中的每个参数含义如下：
 
-可以看到，除了有在AMQP中定义的exchange、queue等概念，Kombu还对消息的发送方Producers和接收方Consumer作了抽象，这在RabbitMQ是没有的。不知道大家还记不记得RabbitMQ中消息的发送和接收的方式。在RabbitMQ中，发送是将指定完exchange、routing_key以及其他一些属性的message用channel.basic_publish方法来实现的，接收则是声明一个queue然后与exchange绑定，并指定callback函数。而在Kombu中消息的发送和接收则会更加简单和形象，更加的面向对象，相信大家在后面的例子中会强烈的感受到。
+- channel——上面建立的connection，或者是比较轻量级的channel
+- exchange——默认发送到的exchange，指定默认值后每次发送消息时就不用再制定exchange了
+- routing_key——默认的routing key，会的被附加到message上
+- serializer——默认的serializer。默认是json格式（就是用来指明message的格式）
+- compression——默认（针对所有消息而言）的消息的压缩方法。默认（针对该参数而言）是不压缩
+- auto_declare——是否在建立的时候声明exchange（也就是说，如果exchange还没有被建立，那么把这个设置为true就能建立一个）.默认值为True
+- on_return——消息发送失败时的回调函数。
 
-#### 主要特点
-接下来，我们从整体上来了解一下Kombu的主要特点。
+在Producer类中有下面几个重要的方法：
 
-- 支持将不同的消息中间件以插件的方式进行灵活配置。Kombu中使用transport这个术语来表示一个具体的消息中间件（后续均用broker指代）。
-	
-	- transport使用py-amqp、librabbitmq、qpid-python等链接库来实现与RabbitMQ、Qpid等broker的连接。
-	- 用C语言实现了一个高性能的rabbitmq链接库——librabbitmq
-	- 引入transport这个抽象概念可以使得后续添加对non-AMQP的transport非常简单。当前Kombu中build-in支持有Redis、Beanstalk、Amazon SQS、CouchDB,、MongoDB,、ZeroMQ,、ZooKeeper、SoftLayer MQ和Pyro。
-	- 同样，可以使用SQLAlchemy或Django ORM transport来将数据库当作broker使用
-	- In-memory transport for unit testing（没理解= =）
-- 支持对message的编码、序列化和压缩
-- 对各种transport提供一致的异常处理
-- 对connection和channle中的错误提供优雅的处理方案
-最重要的就是对所有的broker进行了抽象——transport，为不同的broker提供了一致的解决方案。通过Kombu，开发者可以根据实际需求灵活的选择或更换broker。下表对当前主流broker之间进行了一些对比。
-![Transport Comparison](/img/in-post/post10-kombu-1.png)
+- declare()：用于声明exchange
+- publish(body, routing_key=None, delivery_mode=None, mandatory=False, immediate=False, priority=0, content_type=None, content_encoding=None, serializer=None, headers=None, compression=None, exchange=None, retry=False, retry_policy=None, declare=, []**properties)：发送一个消息，几个重要形参的含义如下：
+    - body-消息的内容
+    - routing_key-消息的routing key，exchange在对该消息进行路由时需要用到
+    - priority-消息的优先级，0-9之间的数字
+    - content-type-消息的内容类型。默认是auto-detect
+    - contente_encoding-消息内容编码方式。默认是auto-detect
+    - serializer-所使用的序列化方法。默认是auto-detect
+    - compression-所使用的压缩方法。默认不压缩
+    - exchange-消息发送到的exchange，该值会覆盖声明Producer时传入的exchange
+    - retry-连接失败后重试的最大次数
+    - retry-policy-连接失败重试相关的配置，由ensure()方法支持
+    - expiration-每个消息TTL的失效期（单位为秒）。默认永不失效
+    - **properties-额外的消息属性
+- revive(channel):连接丢失后重启producer
+
+#### Consumers
+
+
 
 ## 0x03 牛刀小试——Hello World
 下面我们以一个Hello World程序作为本篇博客的结尾，看看Kombu是怎么帮助我们实现消息通信的。一些细节看不懂没关系，在后续我们会对里面的每个对象进行深入的学习。
