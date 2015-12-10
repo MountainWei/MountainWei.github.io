@@ -1,8 +1,8 @@
 ---
 layout:     post
-title:      "Kombu学习笔记（一）"
-subtitle:   " Part I  Kombu概述"
-date:       2015-12-10 15:00:00
+title:      "Kombu学习笔记（二）"
+subtitle:   " Part II  Connections，Producers和Consumers对象"
+date:       2015-12-10 18:00:00
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-05.jpg"
 tags:
@@ -13,18 +13,90 @@ tags:
 >  Kombu is a messaging library for Python.The aim of Kombu is to make messaging in Python as easy as possible by providing an idiomatic high-level interface for the AMQ protocol, and also provide proven and tested solutions to common messaging problems.——摘自[kombu官网](http://kombu.readthedocs.org/en/latest/introduction.html)
 
 ## 0x01 前言
-从上面官方对Kombu的描述中可以看到，Kombu为AMQP协议提供了一个通用的高层接口，也即是说Kombu不负责具体的消息传输服务，而是在消息中间件层之上作了一层封装，并为性能、可靠性和异常捕获等常见的问题提供了统一的解决方案，这样开发人员就可以聚焦于业务代码的编写，而不用考虑消息如何发送和接收。
+在本文中，我们会讲解Kombu中三个重要的对象：Connections、Producers和Consumers。它们的概念在[上一篇概述](/2015/12/10/kombu-library-study-1/)中已经介绍过了，简单说来，Connections是对broker的一个连接，Producers用来发送消息，Consumer用来接收并处理消息。废话不多说，直奔主题吧。
 
-本专题是对[RabbitMQ系列](/2015/12/06/six-steps-to-study-rabbitmq-1/)的扩展延伸，因此对RabbitMQ还不了解的朋友，请先看一下前面的有关内容，否则会对一些概念无法清楚的了解。之所以要学习Kombu，其实也是为后面分析oslo.messaging做铺垫。社区为了适应OpenStack中对消息传输的一些特殊要求，在Kombu的基础上进行扩展从而形成了oslo.messaging，新增了许多新特性。因此，Kombu的学习也是掌握oslo.messaging必不可少的一环。
+## 0x02 具体用法
 
-说句题外话，Kombu的意思是海带！！1难道开发这个库的程序员喜欢吃海带？话说想找个海带的唯美背景图还真是难~~
+#### Connections
+在发送和接收消息之前，首先得需要指定一个具体的transport，并用该transport与broker建立connection。在Kombu中，用的最多的transport是amqp、librabbitmq、redis、qpid和in-memory。当然，你也可以自定义一个transport，Kombu默认的transport是amqp。下面是使用默认的amqp transport创建一个connection对象的方法：
 
-好啦，接下来，就开始正式学习Kombu，本篇博客主要内容是对Kombu做一个整体上的概述，为后面的深入了解打下基础。事先声明，本系列的内容都是在Kombu官方文档的基础上进行整理形成，部分参考了[网友bingotree](http://bingotree.cn/?p=204)的博客，在这里向他表示感谢。
+```
+from kombu import Connection
+connection = Connection('amqp://guest:guest@localhost:5672//')
+```
+此时，与broker的连接<b>并没有</b>建立，事实上connection只会在需要的时候建立。你可以调用connect()方法来显式的建立与broker的连接
 
-## 0x02 概述
+```
+connection.connect()
+```
+可以查看connected属性来判断连接是否建立,使用完后要记得调用close()方法来关闭连接哦。下图是connection建立与关闭的演示：
+[connection建立与关闭](/img/in-post/post11-kombu-1.png)
+然而，关闭connection的最佳方式是调用release()方法，当connection是从connection pool中获得的，该方法会释放这个connection所占用的资源；如果connection是通过上面的方式直接建立的，那么该方法则会关闭该connection。
 
-#### 重要概念
-在Kombu中，有一些重要的概念需要事先了解，有的与RabbitMQ相同，也有的是RabbitMQ中没有的，下面来具体看一下。
+```
+connection.release()
+```
+当然，总有人会忘记关闭connection，所以一个更好的创建connection的方式是使用python的with语句。
+
+```
+with Connection() as connection:
+	#work with connection
+```
+下面我们来仔细分析一下声明Connection时传入的那一坨字符串，Kombu中把这称为URLs，格式如下：
+
+```
+transport://userid:password@hostname:port/virtual_host
+```
+根据这个格式，我们就很容易分析出上文使用的URL：'amqp://guest:guest@localhost:5672//'的含义了。它的意思是使用amqp这个默认的transport，也即是RabbitMQ。由于RabbitMQ在安装后，默认会创建一个user_id和password都为guest的用户，并监听5672这个端口，所以整个URL就为这个样子。
+
+另外，官方也给出了一些合法URLs的示例：
+
+```
+# Specifies using the amqp transport only, default values
+# are taken from the keyword arguments.
+amqp://
+
+# Using Redis
+redis://localhost:6379/
+
+# Using Redis over a Unix socket
+redis+socket:///tmp/redis.sock
+
+# Using Qpid
+qpid://localhost/
+
+# Using virtual host '/foo'
+amqp://localhost//foo
+
+# Using virtual host 'foo'
+amqp://localhost/foo
+```
+URL的查询字段可以用来设置一些其他参数，例如下面的URL设置Connection使用ssl来传输消息。
+
+```
+amqp://localhost/myvhost?ssl=1
+```
+Connection类支持的其他参数列表如下,我就不一一翻译了：
+
+|      keyword      |        interpretion       |
+| :----------: | :---------------- |
+|  hostname   | Default host name if not provided in the URL. |
+|  userid   | Default user name if not provided in the URL.        |
+|  password   | Default password if not provided in the URL.        |
+| virtual_host | Default virtual host if not provided in the URL.        |
+| port | Default port if not provided in the URL.        |
+|  transport  | Default transport if not provided in the URL. Can be a string specifying the path to the class. (e.g. kombu.transport.pyamqp:Transport), or one of the aliases: pyamqp, librabbitmq, redis, qpid, memory, and so on.        |
+|  ssl  | Use SSL to connect to the server. Default is False. Only supported by the amqp and qpid transports.           |
+| insist | Insist on connecting to a server. No longer supported, relic from AMQP 0.8        |
+| connect_timeout | Timeout in seconds for connecting to the server. May not be supported by the specified transport.        |
+| transport_options | A dict of additional connection arguments to pass to alternate kombu channel implementations. Consult the transport documentation for available options.        |
+
+接着来说说AMQP的transports。Kombu为我们提供了4个与AMQP相关的transport，分别是pyamqp 、librabbitmq 、amqp 、qpid 。
+
+1. pyamqp：使用纯python库——amqp来与AMQP broker进行连接，随着Kombu一起被安装
+2. librabbitmq:用C写的一个高性能连接amqp broker的链接库，可以看作pyamqp的高新能版
+3. amqp：首先会尝试用librabbitmq去连接rabbitmq，如果失败则再使用pyamqp去连接
+4. qpid：使用纯python库——qpid.messaging来与broker进行连接，随着Kombu一起被安装。Qpid库虽然也使用的是amqp，但是针对Qpid broker的一些特点作了扩展。
 
 - Producers: 发送消息给exchange
 - Exchanges: 用于路由消息（消息发给exchange，exchange发给对应的queue）。路由就是比较routing-key（这个message提供）和binding-key（这个queue注册到exchange的时候提供）。使用时，需要指定exchange的名称和类型（direct，topic和fanout）。可以发现，和RabbitMQ中的exchange概念是一样的。
@@ -62,8 +134,8 @@ tags:
 from kombu import Connection
 import datetime
 
-# "amqp://guest:guest@localhost:5672//"中的amqp就是上文所提到的transport，
-# 后面的部分是连接具体transport所需的参数，具体含义下篇博客中会讲到
+# "amqp://guest:guest@localhost:5672//"就是上文所提到的transport，
+# 在这里代表的是使用RabbitMQ作为broker
 with Connection('amqp://guest:guest@localhost:5672//') as conn:
     simple_queue = conn.SimpleQueue('simple_queue')
     message = 'helloword, sent at %s' % datetime.datetime.today()
