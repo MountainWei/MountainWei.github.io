@@ -2,7 +2,7 @@
 layout:     post
 title:      "Kombu学习笔记（二）"
 subtitle:   " Part II  Connections，Producers和Consumers对象"
-date:       2015-12-10 23:00:00
+date:       2015-12-11 13:00:00
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-05.jpg"
 tags:
@@ -133,42 +133,107 @@ Producers是消息的发送者，其初始化方法为：
 - revive(channel):连接丢失后重启producer
 
 #### Consumers
+Consumers是消息的处理者，在创建时需要指定connection和一个queue列表。声明方式如下：
 
+```
+class kombu.Consumer(channel, queues=None, no_ack=None, auto_declare=None, callbacks=None, on_decode_error=None, on_message=None, accept=None)
+```
+几个重要的属性：
 
+- Consumer.auto_declare = True: 默认情况下，所有实体在初始化的时候都会被声明。当设置为False时，需要手动处理
+- Consumer.callbacks：消息到达后的处理方法。参数必须有(body, message)这两个。
+- Consumer.on_message：收到消息后的操作。如果指定了这个那么callbacks 就不会被使用了。
+- Consumer.accept = None：consumer接收消息的content-types。当consumer接收到一个不在列表中类型的消息时，就会抛出异常。默认下只接收json和text这两种content-type的message
+- Consumer.no_ack：是否自动发送acknowledgment
 
-## 0x03 牛刀小试——Hello World
-下面我们以一个Hello World程序作为本篇博客的结尾，看看Kombu是怎么帮助我们实现消息通信的。一些细节看不懂没关系，在后续我们会对里面的每个对象进行深入的学习。
+几个重要的方法：
 
-首先是消息发送端hello_publisher.py：
-{% highlight python linenos %}
-from kombu import Connection
-import datetime
+- Consumer.add_queue(queue)：添加一个queue给到这个consumer，之后这个consumer就会从这个queue拿message了。不过得等到调用consume方法后才会开始拿消息。
+- Consumer.cancel()和Consumer.close()：移除所有活动的consumer，已经接收到消息的consumer不会立即终止，等处理完消息后再终止
+- Consumer.cancel_by_queue(queue)：consumer停止从指定queue name的queue中接收消息
+- Consumer.consume(no_ack=None)：用于开始接收消息。可以被多次调用，每次新新调用时会对新添加的queue进行监听，同时对于之前调用cancel_by_queue()方法取消监听的queue也会重新被监听
+- Consumer.purge()：把所有queue中的message都删除，`注意：这个操作是不可逆的`
+- Consumer.recover(requeue=False): 重新接收未发送ack的message。
+- Consumer.receive(body, message)：消息到达后会调用他。然后其会调用注册的callback
+- Consumer.register_callback(callback)：注册callback,即处理消息的函数
+- Consumer.revive(channel):connection丢失后重启consumer
 
-# "amqp://guest:guest@localhost:5672//"就是上文所提到的transport，
-# 在这里代表的是使用RabbitMQ作为broker
-with Connection('amqp://guest:guest@localhost:5672//') as conn:
-    simple_queue = conn.SimpleQueue('simple_queue')
-    message = 'helloword, sent at %s' % datetime.datetime.today()
-    simple_queue.put(message)
-    print('Sent: %s' % message)
-    simple_queue.close()
-{% endhighlight %}
-然后是消息接收端hello_consumer.py：
-{% highlight python linenos %}
-from kombu import Connection
+可以将不同channel中的consumer合在一起来共同提供消息处理服务，当然，这些不同的channel来自同一个connection，Connection对象通过调用drain_events()方法来监听该connection上所有channel中的events。
 
-with Connection('amqp://guest:guest@localhost:5672//') as conn:
-    simple_queue = conn.SimpleQueue('simple_queue')
-    message = simple_queue.get(block=True, timeout=1)
-    print("Received: %s" % message.payload)
-    message.ack()
-    simple_queue.close()
-{% endhighlight%}
- 从这个简单的程序中就可以体会到，Kombu的这个Hello World程序比[RabbitMQ的Hello World](/2015/12/06/six-steps-to-study-rabbitmq-1/)在易读性上要好很多，代码也更加整洁。
- 
-## 0x04 总结
-有关Kombu的概述就到这里，想必看到这里，大家对Kombu这个python库有了一个大致的了解吧。在后续的博客中我将会对Kombu中重要的对象做出详尽的讲解，see you later!
+`注意：在Kombu 3.0以上的版本中，Consumer默认只接收json/binary或者纯文本消息，如果需要对其它格式的消息进行反序列化，则需要显式的在accept参数中指定，方法如下：`
 
+```
+Consumer(conn, accept=['json', 'pickle', 'msgpack', 'yaml'])
+```
+如上面所讲到的，consumer可以单独使用或是混合使用，使用方法对比如下：
+
+```
+# Draining events from a single consumer
+with Consumer(connection, queues, accept=['json']):
+    connection.drain_events(timeout=1)
+    
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Draining events from several consumers
+from kombu.utils import nested
+
+with connection.channel(), connection.channel() as (channel1, channel2):
+    with nested(Consumer(channel1, queues1, accept=['json']),
+                Consumer(channel2, queues2, accept=['json'])):
+        connection.drain_events(timeout=1)
+```
+然而，在实际应用中，我们一般继承 ConsumerMixin类来进行面向对象的开发，方法如下：
+
+```
+# Draining events from a single consumer
+from kombu.mixins import ConsumerMixin
+
+class C(ConsumerMixin):
+
+    def __init__(self, connection):
+        self.connection = connection
+
+    def get_consumers(self, Consumer, channel):
+        return [
+            Consumer(queues, callbacks=[self.on_message], accept=['json']),
+        ]
+
+    def on_message(self, body, message):
+        print("RECEIVED MESSAGE: %r" % (body, ))
+        message.ack()
+
+C(connection).run()
+    
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Draining events from several consumers
+from kombu import Consumer
+from kombu.mixins import ConsumerMixin
+
+class C(ConsumerMixin):
+    channel2 = None
+
+    def __init__(self, connection):
+        self.connection = connection
+
+    def get_consumers(self, _, default_channel):
+        self.channel2 = default_channel.connection.channel()
+        return [Consumer(default_channel, queues1,
+                         callbacks=[self.on_message],
+                         accept=['json']),
+                Consumer(self.channel2, queues2,
+                         callbacks=[self.on_special_message],
+                         accept=['json'])]
+
+    def on_consumer_end(self, connection, default_channel):
+        if self.channel2:
+            self.channel2.close()
+
+C(connection).run()
+```
+
+## 0x03 总结
+本来打算在这篇博客中把所有Kombu内容都写完的，但是由于篇幅的原因，剩下的一些内容就留在下一篇博客中讲吧。在下一篇博客中，我会对剩下的几个重要对象（Serialization、Exchanges、Queues、Connection and Producer Pools）进行介绍，然后展示一个work queue例子。see you later!
 
 
 
