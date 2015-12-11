@@ -30,7 +30,7 @@ connection = Connection('amqp://guest:guest@localhost:5672//')
 connection.connect()
 ```
 可以查看connected属性来判断连接是否建立,使用完后要记得调用close()方法来关闭连接哦。下图是connection建立与关闭的演示：
-[connection建立与关闭](/img/in-post/post11-kombu-1.png)
+![connection建立与关闭](/img/in-post/post11-kombu-1.png)
 然而，关闭connection的最佳方式是调用release()方法，当connection是从connection pool中获得的，该方法会释放这个connection所占用的资源；如果connection是通过上面的方式直接建立的，那么该方法则会关闭该connection。
 
 ```
