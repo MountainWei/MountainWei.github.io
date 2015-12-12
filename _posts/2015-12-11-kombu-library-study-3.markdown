@@ -111,23 +111,6 @@ Consumer(conn, [queue], accept=['json', 'pickle', 'msgpack'])
 - pickle—如果你只需要Python就可以支持所有业务，那么建议使用pickle。pickle可以支持Python所有内建的数据类型（class instance除外）,编码后的数据量更小，而且比JSON的处理速度有了一些提高。pickle的缺点就是人们常说的安全问题。一个精心构造的pickle payload几乎可以实现普通Python程序所能实现的所有功能，所以在使用pickle时必须进行严格的访问控制，防止恶意的第三方向broker发送message。
 - yaml—YAML类似于JSON，支持跨语言，而且比JSON支持更多的数据类型（dates, recursive references等）。缺点是Python中支持YAML的库的处理速度比JSON慢。
 
-如上面所讲到的，consumer可以单独使用或是混合使用，使用方法对比如下：
-
-```
-# Draining events from a single consumer
-with Consumer(connection, queues, accept=['json']):
-    connection.drain_events(timeout=1)
-    
-<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-# Draining events from several consumers
-from kombu.utils import nested
-
-with connection.channel(), connection.channel() as (channel1, channel2):
-    with nested(Consumer(channel1, queues1, accept=['json']),
-                Consumer(channel2, queues2, accept=['json'])):
-        connection.drain_events(timeout=1)
-```
 在Kombu中，设置message的serializer方式有两种方法，分别如下：
 
 1. 在创建Producer时指定serializer：
@@ -145,10 +128,11 @@ with connection.channel(), connection.channel() as (channel1, channel2):
 ```
 
 ## 0x03 Work Queue实现
-在最后，我们实现一个简单的Work Queue消息模型来作为对Kombu学习的总结。在前面的[六部学习RabbitMQ（三）](/2015/12/09/six-steps-to-study-rabbitmq-3/)中我们使用RabbitMQ实现了Work Queue模型，我们可以边学习边与前面的进行对比，这样额可以对Kombu有一个更加感性的认识。
+在最后，我们实现一个简单的Work Queue消息模型来作为对Kombu学习的总结。在前面的[六步学习RabbitMQ（三）](/2015/12/09/six-steps-to-study-rabbitmq-3/)中我们使用RabbitMQ实现了Work Queue模型，我们可以边学习边与前面的进行对比，这样可以对Kombu有一个更加感性的认识。
 
-在下面实现的Work Queue模型中，设置了三个Queue绑定到一个direct的exchange上，然后consumer监听所有的队列。消息来了后就轮询调用consumer进行处理。
-显示queues.py，主要内容是声明exchange和Qeueue，并将Queue与exchange进行绑定：
+在下面实现的Work Queue模型中，设置了三个Queue绑定到一个direct类型的exchange上，然后consumer监听所有的队列。消息来了后就轮询调用consumer进行处理。
+
+先是queues.py，主要内容是声明exchange和Qeueue，并将Queue与exchange进行绑定：
 
 ```
 from kombu import Exchange, Queue
