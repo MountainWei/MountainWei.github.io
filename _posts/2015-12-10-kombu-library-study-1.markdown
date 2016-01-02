@@ -82,7 +82,7 @@ with Connection('amqp://guest:guest@localhost:5672//') as conn:
     message.ack()
     simple_queue.close()
 {% endhighlight%}
- 从这个简单的程序中就可以体会到，Kombu的这个Hello World程序比[RabbitMQ的Hello World](/2015/12/05/six-steps-to-study-rabbitmq-1/)在易读性上要好很多，代码也更加整洁。
+ 从这个简单的程序中就可以体会到，Kombu的这个Hello World程序比[RabbitMQ的Hello World](/2015/12/06/six-steps-to-study-rabbitmq-1/)在易读性上要好很多，代码也更加整洁。
  
 ## 0x04 总结
 有关Kombu的概述就到这里，想必看到这里，大家对Kombu这个python库有了一个大致的了解吧。在后续的博客中我将会对Kombu中重要的对象做出详尽的讲解，see you later!
