@@ -15,16 +15,19 @@ zhihu_username:     ai-er-da-bu-niu
 github_username:    MountainWei
 
 #debug settings
-safe: true
+#safe: true  #如果为safe将导致paginate不可用
 
 
 # Build settings
 port: 4001
-highlighter: pygments
 permalink: pretty
-paginate: 5
 exclude: ["less","node_modules","Gruntfile.js","package.json","README.md"]
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+
+gems: [jekyll-paginate, jekyll-gist] #增加这一行
+paginate: 5 # pagination based on number of posts
+paginate_path: "page:num"
+exclude: ["README.md"] # files to exclude
 
 # Markdown settings
 # replace redcarpet to kramdown,
@@ -33,7 +36,7 @@ anchorjs: true                          # if you want to customize anchor. check
 markdown: kramdown
 kramdown:
   input: GFM                            # use Github Flavored Markdown !important
-
+  syntax_highlighter: rouge
 
 
 # Disqus settings
