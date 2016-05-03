@@ -16,13 +16,13 @@ tags:
 ## 0x01 前言
 马上就要面临找工作了，准备陆陆续续将数据结构、计算机网络、操作系统这些基础给复习一遍。在复习的过程中，我会不断的在博客里进行总结，一方面也起到督促的作用。
 
-## 0x02 单链表
-今天复习的是数据结构里面最基础的数据结构——单链表，用C语言实现，废话不多说，直接上代码。
+## 0x02 头文件——list.h
+今天复习的是数据结构里面最基础的数据结构——单链表，用C语言实现，废话不多说，直接上代码。首先是头文件list.h，里面定义了单链表结构体和操作接口。
 
-单链表头文件list.h
 {% highlight c %}
 /* list.h --简单列表类型的头文件 */
 #ifndef LIST_H_
+
 #define LIST_H_
 
 #include<stdbool.h>
@@ -88,12 +88,15 @@ void EmptytheList (List *plist);
 #endif //
 {% endhighlight %}
 
+## 0x03 函数原型的实现——list.c
 链表操作相关函数原型的实现放在list.c文件中
 
 {% highlight c %}
 /* list.c --支持列表操作的函数 */
 #include<stdio.h>
+
 #include<stdlib.h>
+
 #include "list.h"
 
 static void CopyToNode(Item item, Node *pnode);
@@ -186,12 +189,15 @@ static void CopyToNode(Item item, Node *pnode)
 }
 {% endhighlight %}
 
-测试链表，test.c
+## 0x04 测试链表的驱动程序——test.c
+写一个简单的驱动程序来测试链表
 
 {% highlight c %}
 /* test.c --使用ADT风格的链表 */
 #include<stdio.h>
+
 #include<stdlib.h>
+
 #include "list.c"
 
 void showmovies(Item item);

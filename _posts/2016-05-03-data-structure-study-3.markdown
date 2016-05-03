@@ -243,7 +243,9 @@ Node* findCircleFirst(const LinkList *list, int nCircleLen)
 * list.c --单链表排序及常见算法
 */
 #include<stdio.h>
+
 #include<stdlib.h>
+
 #include<stdbool.h>
 
 typedef int ElemType;

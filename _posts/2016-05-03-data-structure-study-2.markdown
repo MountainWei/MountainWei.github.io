@@ -9,13 +9,14 @@ tags:
     - Data Structure
     - List
     - C language
-    - Sort Algorithm
+    - Sort
+    - Algorithm
 ---
 
 >  Talk is cheap, show me the code. ——Linus Torvalds
 
 ## 0x01 前言
-在[上一篇：数据结构之单链表（一）](/2016/05/02/data-structure-study-1/)中,我们用C语言实现了单链表的基本操作，本片博客将在
+在上一篇：[数据结构之单链表（一）](/2016/05/02/data-structure-study-1/)中,我们用C语言实现了单链表的基本操作，本片博客将在
 单链表的基础上继续深入，实现插入排序、选择排序和快速排序这三种经典排序算法。
 
 链表排序和数组排序的思路类似，只是链表操作起来比较麻烦，因为不能随机访问，所以只能借助于类似于前置或后置插入，添加等概念来完成。
@@ -25,7 +26,9 @@ tags:
 
 {% highlight c %}
 #include<stdio.h>
+
 #include<stdlib.h>
+
 #include<stdbool.h>
 
 typedef int ElemType;
