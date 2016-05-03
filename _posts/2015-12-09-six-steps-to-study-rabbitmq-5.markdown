@@ -60,7 +60,7 @@ channel.exchange_declare(exchange='topic_logs',
 
 ## 0x03 代码整理
 发送端的程序emit_log_topic.py:
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 import sys
@@ -81,7 +81,7 @@ print " [x] Sent %r:%r" % (routing_key, message)
 connection.close()
 {% endhighlight %}
 接收端的程序receive_logs_topic.py:
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 import sys

@@ -42,7 +42,7 @@ tags:
 <ol type="i">
     <li>
     建立与rabbitmq服务器的connection
-{% highlight python linenos %}
+{% highlight python %}
 import pika
 connection = pika.BlockingConnection(pika.ConnectionParameters(
             'localhost'))
@@ -51,13 +51,13 @@ channel = connection.channel()
     </li>
     <li>
     创建接受消息的队列“hello”。
-{% highlight python linenos %}
+{% highlight python %}
 channel.queue_declare(queue='hello')
 {% endhighlight %}
     </li>
     <li>
     在rabbitmq中，一个消息不能直接发送到队列中，消息需要通过一个exchange。但是在这个例子中，我们只是使用一个默认的exchange，该exchange用空字符串命名，它允许我们制定一个特定的消息队列。
-{% highlight python linenos %}
+{% highlight python %}
 channel.basic_publish(exchange='',
                       routing_key='hello',
                       body='Hello World!')
@@ -66,7 +66,7 @@ print " [x] Sent 'Hello World!'"
     </li>
     <li>
     在退出程序之前，我们需要确定网络缓冲区被flushed并且消息已经被发送到rabbitmq中，我们可以关闭该connection来达到这个目的。
-{% highlight python linenos %}
+{% highlight python %}
 connection.close()
 {% endhighlight %}
     </li>
@@ -81,14 +81,14 @@ connection.close()
     </li>
     <li>
     创建一个回调函数。从消息队列中取消息的复杂度更大，它是通过为消息队列订阅一个回调函数来实现的。只要消息队列接收到消息，该回调函数就会被Pika库调用。
-{% highlight python linenos %}
+{% highlight python %}
 def callback(ch, method, properties, body):
     print " [x] Received %r" % (body,)
 {% endhighlight %}
     </li>
     <li>
     将创建的回调函数与hello消息队列绑定，告诉rabbitmq该回调函数会从hello队列中接收消息。其中exchange表示交换器，能精确指定消息应该发送到哪个队列，routing_key设置为队列的名称，body就是发送的内容，具体发送细节暂时先不关注,后续的博客会详细讲解。
-{% highlight python linenos %}
+{% highlight python %}
 channel.basic_consume(callback,
                      queue='hello',
                       no_ack=True)
@@ -96,7 +96,7 @@ channel.basic_consume(callback,
     </li>
     <li>
     让回调函数循环等待消息
-{% highlight python linenos %}
+{% highlight python %}
 print ' [*] Waiting for messages. To exit press CTRL+C'
 channel.start_consuming()
 {% endhighlight %}
@@ -107,7 +107,7 @@ channel.start_consuming()
 ## Ox03 总结
 在第二部分，为了完整剖析程序的结构，将整个Hello World程序进行了分拆，现在再将它们合在一起，完整的Hello World代码如下：
 首先是send.py
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 
@@ -125,7 +125,7 @@ connection.close()
 {% endhighlight %}
 
 接下来是完整的receive.py
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 connection = pika.BlockingConnection(pika.ConnectionParameters(

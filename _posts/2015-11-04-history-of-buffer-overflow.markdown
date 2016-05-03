@@ -94,7 +94,7 @@ tags:
 ![img](/img/in-post/post2-stack-frame.jpg)
 
 <br>好了，理论说了一大堆，现在就以一个简单的C程序为例来具体说明函调调用过程中的栈的变化。这个程序结构很简单，由一个main函数和func子函数组成。首先，main执行，main各个参数从右向左逐步压入栈中，最后压入返回地址。源代码如下（第一次用pygments的代码高亮，代码很酷有木有！）
-{% highlight c linenos %}
+{% highlight c %}
 #include <stdio.h>
 
 int func(int param1 ,int param2,int param3){
@@ -118,36 +118,66 @@ int main(int argc, char* argv[]){
 首先是执行main函数，main各个参数从右向左逐步压入栈中，最后压入返回地址。然后，从现在开始，main函数开始创建自己的栈帧。压入上一个栈帧的EBP值，依次压入局部变量param1、param2、param3。让我们来看看当前栈中的情况是什么样子。
 ![img](/img/in-post/post2-function-stack-1.jpg)
 现在程序继续运行到16行，开始调用func，终于到重头戏了!在进入func函数前，会先执行以下九条汇编指令（假设执行函数前ESP指针为NN）：
-{% highlight c++ linenos %}
-mov    0x14(%esp),%eax  //将[ESP-14h]中的内容赋到EAX寄存器中
-mov    %eax,0x8(%esp)   //将EAX寄存器中的内容放入地址[ESP+8h]内存中，即将param3入栈,地址为NN+8h
-mov    0x18(%esp),%eax  //将[ESP-18h]中的内容赋到EAX寄存器中
-mov    %eax,0x4(%esp)   //将EAX寄存器中的内容放入地址[ESP+4h]内存中，即将param2入栈,地址为NN+4h
-mov    0x1c(%esp),%eax  //将[ESP-1Ch]中的内容赋到EAX寄存器中
-mov    %eax,(%esp)      //将EAX寄存器中的内容放入地址[ESP]内存中，即将param1入栈,地址为NN
-call   0x401334 <func>  //调用func函数，call指令会将当前返回地址入栈，ESP-=4h,ESP = NN - 4h
+{% highlight c++ %}
+//将[ESP-14h]中的内容赋到EAX寄存器中
+
+mov    0x14(%esp),%eax
+//将EAX寄存器中的内容放入地址[ESP+8h]内存中，即将param3入栈,地址为NN+8h
+
+mov    %eax,0x8(%esp)
+//将[ESP-18h]中的内容赋到EAX寄存器中
+
+mov    0x18(%esp),%eax
+//将EAX寄存器中的内容放入地址[ESP+4h]内存中，即将param2入栈,地址为NN+4h
+
+mov    %eax,0x4(%esp)
+//将[ESP-1Ch]中的内容赋到EAX寄存器中
+
+mov    0x1c(%esp),%eax
+//将EAX寄存器中的内容放入地址[ESP]内存中，即将param1入栈,地址为NN
+
+mov    %eax,(%esp)
+//调用func函数，call指令会将当前返回地址入栈，ESP-=4h,ESP = NN - 4h
+
+call   0x401334 <func>
 {% endhighlight %}
 接下来就正式进入func函数中执行，即func开始创建自己的栈帧！此时会先执行以下两条经典的汇编指令，之所以经典，是因为所有的栈帧建立都会先执行这两条指令来保存上一个栈帧的EBP指针。
-{% highlight c++ linenos%}
-push   %ebp       //保护main函数栈帧的EBP指针。EBP入栈，ESP-=4h, ESP = NN - 8h
-mov    %esp,%ebp  //设置EBP指针指向当前栈顶，即此时EBP = ESP= NN - 8h
+{% highlight c++ %}
+//保护main函数栈帧的EBP指针。EBP入栈，ESP-=4h, ESP = NN - 8h
+
+push   %ebp
+//设置EBP指针指向当前栈顶，即此时EBP = ESP= NN - 8h
+
+mov    %esp,%ebp
 {% endhighlight %}
 然后是func函数中的局部变量赋值操作，将传进来的实参依次赋值给局部变量var1、var2、var3。以var1为例来说明赋值过程，该过程对应的汇编指令为以下几句:
-{% highlight c++ linenos%}
-sub    $0x10,%esp      //ESP指针往低地址偏移10h个单位，为后面局部变量入栈预留位置
-mov    0x8(%ebp),%eax  //将[EBP+8h]地址里的内容赋给EAX,该地址中正好是刚才存储param1的地址
-mov    %eax,-0x4(%ebp) //把EAX的中的值放到[EBP-4h]这个地址里，即把EAX值赋给var1
+{% highlight c++ %}
+//ESP指针往低地址偏移10h个单位，为后面局部变量入栈预留位置
+
+sub    $0x10,%esp
+//将[EBP+8h]地址里的内容赋给EAX,该地址中正好是刚才存储param1的地址
+
+mov    0x8(%ebp),%eax
+//把EAX的中的值放到[EBP-4h]这个地址里，即把EAX值赋给var1
+
+mov    %eax,-0x4(%ebp)
 {% endhighlight %}
 现在我们来看看所有局部变量都存储完后栈中的情况。
 ![img](/img/in-post/post2-function-stack-2.jpg)
 接着执行第9行的返回语句，将变量var1的值返回。在intel 32位体系结构中，函数返回值通常保存在寄存器eax中。因此，19行对应的汇编语句为：
-{% highlight c++ linenos%}
-mov  -0x4(%ebp),%eax  //把[EBP-0x4]地址里的内容放入EAX中，而[EBP-0x4]地址中存储的就是变量var1
+{% highlight c++ %}
+//把[EBP-0x4]地址里的内容放入EAX中，而[EBP-0x4]地址中存储的就是变量var1
+
+mov  -0x4(%ebp),%eax
 {% endhighlight %}
 此时，func函数执行完毕，接下来就该释放func函数栈帧了。在本例中，释放顺序为局部变量var3，var2，var1依次出栈，EBP恢复原值，返回地址出栈，找到原执行地址，param1，param2，param3依次出栈，函数调用执行完毕。
-{% highlight c++ linenos%}
-leave   //相当于Set ESP to EBP, then pop EBP，即ESP回到EBP处，然后EBP出栈，此时ESP=NN-4h,指向返回地址
-ret     //相等于POP EIP，将ESP指向地址中存储的返回地址放入EIP寄存器中，程序执行流回到main函数中
+{% highlight c++ %}
+//相当于Set ESP to EBP, then pop EBP，即ESP回到EBP处，然后EBP出栈，此时ESP=NN-4h,指向返回地址
+
+leave
+//相等于POP EIP，将ESP指向地址中存储的返回地址放入EIP寄存器中，程序执行流回到main函数中
+
+ret
 {% endhighlight %}
 现在完整的看一下func函数调用过程中所有的汇编指令，该结果是我在本机上的执行结果，IDE为codeblocks。
 {% highlight c++ %}

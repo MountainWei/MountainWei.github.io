@@ -41,7 +41,7 @@ print "fib(4) is %r" % (result,)
 
 #### Callback queue
 在前面讲述的五种通信模式中，Producer只负责发送消息，所做的工作仅仅是连上RabbitMQ服务器，将消息的routing_key设置好后发送到指定的exchange中，剩下的工作就与Producer无关了。然而，在RPC模式中，client发送完消息后，还需要等待接收response，因此client需要建立callback queue来接收response。client发送消息的过程如下：
-{% highlight python linenos %}
+{% highlight python %}
 result = channel.queue_declare(exclusive=True)
 callback_queue = result.method.queue
 
@@ -86,7 +86,7 @@ channel.basic_publish(exchange='',
 
 ## 0x03 代码整理
 RPC client端的程序rpc_client.py:
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 import uuid
@@ -129,7 +129,7 @@ response = fibonacci_rpc.call(30)
 print " [.] Got %r" % (response,)
 {% endhighlight %}
 RPC server端的程序rpc_server.py:
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 

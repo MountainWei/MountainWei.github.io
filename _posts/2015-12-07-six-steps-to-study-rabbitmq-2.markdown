@@ -19,7 +19,7 @@ tags:
 ## 0x02 Work Queue实现
 <br>首先需要进行一些准备，为了模仿一个复杂的任务，我们使用time.sleep（）函数来控制一个任务的执行时间，发送的字符串中有多少个小数点就要执行time.sleep（）多少次，这样就可以模仿那些耗时长的复杂任务。
 <br>大部分代码还是重用上一篇文章中的代码，为了便于理解，在发送端将send.py文件名改为net_task.py,并支持用户输入字符串。代码如下：
-{% highlight python linenos %}
+{% highlight python %}
 import sys
 
 message = ' '.join(sys.argv[1:]) or "Hello World!"
@@ -29,7 +29,7 @@ channel.basic_publish(exchange='',
 print " [x] Sent %r" % (message,)
 {% endhighlight %}
 在接收端，receive.py文件名改为worker.py，在callback函数中解析接收到的字符串，有多少个小数点就sleep多少秒。代码如下：
-{% highlight python linenos %}
+{% highlight python %}
 import time
 
 def callback(ch, method, properties, body):
@@ -65,7 +65,7 @@ shell2$ python worker.py
 
 ## 0x03 改进——消息回复
 在当前的代码中，当worker死掉后，正在处理的所有消息将会丢失，那些已经被分到该worker中但还没来得及处理的消息也是一样。好的方案是当一个worker死了后，我们可以将任务分配到另一个worker中。为了实现这个方案，RabbitMQ支持消息回复。当一个消息被处理完后consumer会返回给rabbitmq一个ack，告诉rabbitmq可以释放并删除该消息。如果consumer死亡，没有发送ack，rabbitmq将会认为该消息没有被处理完，并会重新将消息分配给另一个consumer。这样，即使consumer死掉也能保证消息不会丢失。该机制不会带来任何消息延迟。重分配只发生在worker的连接丢失。消息回复机制默认是打开的，我们可以通过no_ack=True来手动的关闭。Worker.py修改如下：
-{% highlight python linenos %}
+{% highlight python %}
 def callback(ch, method, properties, body):
     print " [x] Received %r" % (body,)
     time.sleep( body.count('.') )
@@ -80,12 +80,12 @@ channel.basic_consume(callback,
 ## Ox04 改进——消息持久化
 我们已经可以保证当consumer死亡消息也不会丢失，但是如果rabbitmq服务器停止后我们的消息还是会丢失。当rabbitmq退出或宕机时，它将会丢失所有的队列和消息。为了保证消息不会丢失，我们需要做两件事情：将对列和消息标记为durable
 先声明队列为durable:
-{% highlight python linenos %}
+{% highlight python %}
 channel.queue_declare(queue='task_queue', durable=True)
 {% endhighlight %}
 此时队列名词为“task_queue”而不是‘hello'，因为我们已经定义了一个undurable的“hello”队列，然而rabbitmq不允许重新设置一个已存在的队列的属性，所以必须重现声明一个durable的队列。
 <br>接着，声明消息为persistent,通过定义delivery_mode为2来实现:
-{% highlight python linenos %}
+{% highlight python %}
 channel.basic_publish(exchange='',
                       routing_key="task_queue",
                       body=message,
@@ -98,14 +98,14 @@ channel.basic_publish(exchange='',
 ## 0x05 改进——公平调度
 轮询调度并不能保证每个每个任务被合理的分配。例如，在有2个worker的条件下，所有的奇数号任务都很大，而所有的偶数号任务都很小，那么采用轮询调度就会导致一个woker总是处于busy状态，而另一个任务则会很空闲。
 <br>为了避免这种情况发生，我们可以使用basic.qos方法，将prefetch_count赋值为1。它会告诉rabbitmq不要一次给一个worker分配超过一个的任务，只有当任务完成后再分配下一个任务。声明语句如下：
-{% highlight python linenos %}
+{% highlight python %}
 channel.basic_qos(prefetch_count=1)
 {% endhighlight %}
 
 ## 0x06 代码整理
 整理后的代码如下：
 完整的New_task.py如下：
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 import sys

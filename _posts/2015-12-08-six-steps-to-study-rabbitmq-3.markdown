@@ -42,7 +42,7 @@ channel.queue_bind(exchange='logs',queue=result.method.queue)
 
 ## 0x03 代码整理
 发送端的程序Emit_log.py:
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 import sys
@@ -62,7 +62,7 @@ print " [x] Sent %r" % (message,)
 connection.close()
 {% endhighlight %}
 接收端的程序Receive_logs.py:
-{% highlight python linenos %}
+{% highlight python %}
 #!/usr/bin/env python
 import pika
 
