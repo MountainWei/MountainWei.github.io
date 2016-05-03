@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "数据结构复习笔记（一）"
+title:      "数据结构之单链表（一）"
 subtitle:   " Lesson 1 C实现单链表"
 date:       2016-05-02 22:00:00
 author:     "Liuv"
