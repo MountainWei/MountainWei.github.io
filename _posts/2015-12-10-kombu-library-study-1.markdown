@@ -17,7 +17,7 @@ tags:
 
 本专题是对[RabbitMQ系列](/2015/12/06/six-steps-to-study-rabbitmq-1/)的扩展延伸，因此对RabbitMQ还不了解的朋友，请先看一下前面的有关内容，否则会对一些概念无法清楚的了解。之所以要学习Kombu，其实也是为后面分析oslo.messaging做铺垫。社区为了适应OpenStack中对消息传输的一些特殊要求，在Kombu的基础上进行扩展从而形成了oslo.messaging，新增了许多新特性。因此，Kombu的学习也是掌握oslo.messaging必不可少的一环。
 
-说句题外话，Kombu的意思是海带！！1难道开发这个库的程序员喜欢吃海带？话说想找个海带的唯美背景图还真是难~~
+说句题外话，Kombu的意思是海带！！难道开发这个库的程序员喜欢吃海带？话说想找个海带的唯美背景图还真是难~~
 
 好啦，接下来，就开始正式学习Kombu，本篇博客主要内容是对Kombu做一个整体上的概述，为后面的深入了解打下基础。事先声明，本系列的内容都是在Kombu官方文档的基础上进行整理形成，部分参考了[网友bingotree](http://bingotree.cn/?p=204)的博客，在这里向他表示感谢。
 
@@ -58,7 +58,8 @@ tags:
 下面我们以一个Hello World程序作为本篇博客的结尾，看看Kombu是怎么帮助我们实现消息通信的。一些细节看不懂没关系，在后续我们会对里面的每个对象进行深入的学习。
 
 首先是消息发送端hello_publisher.py：
-{% highlight python linenos %}
+
+{% highlight python %}
 from kombu import Connection
 import datetime
 
@@ -71,8 +72,10 @@ with Connection('amqp://guest:guest@localhost:5672//') as conn:
     print('Sent: %s' % message)
     simple_queue.close()
 {% endhighlight %}
+
 然后是消息接收端hello_consumer.py：
-{% highlight python linenos %}
+
+{% highlight python %}
 from kombu import Connection
 
 with Connection('amqp://guest:guest@localhost:5672//') as conn:
@@ -81,7 +84,7 @@ with Connection('amqp://guest:guest@localhost:5672//') as conn:
     print("Received: %s" % message.payload)
     message.ack()
     simple_queue.close()
-{% endhighlight%}
+{% endhighlight %}
  从这个简单的程序中就可以体会到，Kombu的这个Hello World程序比[RabbitMQ的Hello World](/2015/12/06/six-steps-to-study-rabbitmq-1/)在易读性上要好很多，代码也更加整洁。
  
 ## 0x04 总结
