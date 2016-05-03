@@ -10,9 +10,18 @@ baseurl: ""                             # for example, '/blog' if your blog host
 
 # SNS settings
 RSS: false
+<<<<<<< HEAD
 weibo_username:     liuvblog
 zhihu_username:     ai-er-da-bu-niu
 github_username:    MountainWei
+=======
+weibo_username:     huxpro
+zhihu_username:     huxpro
+github_username:    huxpro
+#twitter_username:  huxpro
+facebook_username:  huxpro
+# linkedin_username:  firstname-lastname-idxxxx
+>>>>>>> a4ae0594c5349c4bd7de1cd87e3ebeefcc891531
 
 #debug settings
 #safe: true  #如果为safe将导致paginate不可用
@@ -28,6 +37,12 @@ gems: [jekyll-paginate, jekyll-gist] #增加这一行
 paginate: 5 # pagination based on number of posts
 paginate_path: "page:num"
 exclude: ["README.md"] # files to exclude
+
+# Gems
+# from PR#40, to support local preview for Jekyll 3.0
+gems: [jekyll-paginate]
+
+
 
 # Markdown settings
 # replace redcarpet to kramdown,
