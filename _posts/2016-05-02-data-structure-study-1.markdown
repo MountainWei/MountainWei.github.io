@@ -20,8 +20,7 @@ tags:
 今天复习的是数据结构里面最基础的数据结构——单链表，用C语言实现，废话不多说，直接上代码。
 
 单链表头文件list.h
-
-```
+{% highlight c %}
 /* list.h --简单列表类型的头文件 */
 #ifndef LIST_H_
 #define LIST_H_
@@ -29,6 +28,7 @@ tags:
 #include<stdbool.h>
 
 #define TSIZE 45
+
 struct film
 {
     char title[TSIZE];
@@ -86,11 +86,11 @@ void Traverse (const List *plist, void (* pfun) (Item item));
 * 操作后: 为该列表分配癿巫被释放 幵丏该列表被置为穸列表 */
 void EmptytheList (List *plist);
 #endif //
-```
+{% endhighlight %}
 
 链表操作相关函数原型的实现放在list.c文件中
 
-```
+{% highlight c %}
 /* list.c --支持列表操作的函数 */
 #include<stdio.h>
 #include<stdlib.h>
@@ -184,12 +184,11 @@ static void CopyToNode(Item item, Node *pnode)
 {
     pnode->item = item;
 }
-
-```
+{% endhighlight %}
 
 测试链表，test.c
 
-```
+{% highlight c %}
 /* test.c --使用ADT风格的链表 */
 #include<stdio.h>
 #include<stdlib.h>
@@ -245,5 +244,4 @@ void showmovies(Item item)
 {
     printf("Movie:%s Rating: %d\n", item.title, item.rating);
 }
-
-```
+{% endhighlight %}
