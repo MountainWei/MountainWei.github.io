@@ -1,7 +1,8 @@
 #Liuv Blog
-### [liuv的博客 &attr;](http://liuvblog.com)
+### [liuv的博客 &rarr;](http://liuvblog.com)
 ![](http://liuvblog.com/img/liuv_blog_screen.png)
-- 2016/05/03  liuvblog v1.6
+
+### 2016/05/03  liuvblog v1.6
 
   更新日志：
 
@@ -11,7 +12,7 @@
   - 添加百度云观测；
   - 修复了以前博客中的一些错别字和格式。
 
-- 2015/12/01  liuvblog v1.5
+### 2015/12/01  liuvblog v1.5
 
   更新日志：
 
