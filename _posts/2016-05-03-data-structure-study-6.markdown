@@ -68,6 +68,7 @@ int CreateBiTree(BiTree *T)
 }
 
 //先序遍历二叉树
+
 void TraverseBiTree(const BiTree *T)
 {
     if(NULL == *T)
@@ -78,6 +79,7 @@ void TraverseBiTree(const BiTree *T)
 }
 
 //中序遍历二叉树
+
 void InOrderBiTree(const BiTree *T)
 {
     if(NULL == *T)
@@ -88,6 +90,7 @@ void InOrderBiTree(const BiTree *T)
 }
 
 //后序遍历二叉树
+
 void PostOrderBiTree(const BiTree *T)
 {
     if(NULL == *T)
@@ -98,6 +101,7 @@ void PostOrderBiTree(const BiTree *T)
 }
 
 //求二叉树的深度
+
 int TreeDeep(const BiTree *T)
 {
     int deep = 0;
@@ -111,6 +115,7 @@ int TreeDeep(const BiTree *T)
 }
 
 //求二叉树叶子结点个数
+
 int Leafcount(const BiTree T, int *num)
 {
     if(T)
