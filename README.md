@@ -1,6 +1,6 @@
 #Liuv Blog
 ### [liuv的博客 &attr;](http://liuvblog.com)
-![http://liuvblog.com/img/liuv_blog_screen.png]
+![](http://liuvblog.com/img/liuv_blog_screen.png)
 - 2016/05/03  liuvblog v1.6
 
   更新日志：
