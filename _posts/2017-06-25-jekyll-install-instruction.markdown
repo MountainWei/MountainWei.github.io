@@ -2,7 +2,7 @@
 layout:     post
 title:      "博客评论系统更换记"
 subtitle:   "jekyll安装和网易云跟帖安装"
-date:       2017-06-25 11:55:00
+date:       2017-06-25 11:55:00 +0800
 author:     "Liuv"
 header-img: "img/post-bg-2015-12-05.jpg"
 tags:
@@ -20,7 +20,7 @@ jekyll3安装之前需要安装以下工具：
  - RubyGems。
  - GCC和Make工具。
 
- ==注：jekyll2时代还需要安装Node.js。==
+ **注：jekyll2时代还需要安装Node.js。**
 
 ### Ruby安装
 根据操作系统的不同，Ruby主要有以下3种安装方法：

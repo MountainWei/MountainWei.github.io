@@ -19,6 +19,7 @@ github_username:    MountainWei
 
 #debug settings
 #safe: true  #如果为safe将导致paginate不可用
+#future: true
 
 
 # Build settings
