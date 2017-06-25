@@ -19,7 +19,9 @@ jekyll3安装之前需要安装以下工具：
  - Ruby，要求版本在2.1以上。
  - RubyGems。
  - GCC和Make工具。
- 注：jekyll2时代还需要安装Node.js。
+
+ ==注：jekyll2时代还需要安装Node.js。==
+
 ### Ruby安装
 根据操作系统的不同，Ruby主要有以下3种安装方法：
  - 对于Linux系统，可以使用系统自带的包管理系统或者第三方的安装工具（官方推荐rbenv和RVM）
@@ -49,6 +51,7 @@ rbenv global 2.4.1
 ruby -v
 gem install bundle
 ```
+
 ### 安装jekyll
 1. 安装jekyll
 ```
