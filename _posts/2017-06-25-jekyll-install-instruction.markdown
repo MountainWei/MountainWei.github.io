@@ -25,9 +25,10 @@ jekyll3安装之前需要安装以下工具：
  - 对于Linux系统，可以使用系统自带的包管理系统或者第三方的安装工具（官方推荐rbenv和RVM）
  - 对于OS X系统，使用第三方的安装工具（官方推荐rbenv和RVM）
  - 对于windows系统，使用RubyInstaller进行安装
- 
 我当前的系统为ubuntu16.04，使用apt安装ruby后，发现版本为1.9，低于要求的2.1.于是只能使用第三方的安装工具。我首先选择的是RVM，根据官网上的文档添加key并安装后，出现了奇怪的permission denied错误，一番排查未果后果断弃之，不在这上面浪费时间。选择官方推荐的另一个安装工具rbenv，然后一路顺利成功安装，方法如下：
-1. 安装rbenv。rbenv本身是一个ruby的管理工具，能够管理系统中不同版本的ruby。
+1. 安装rbenv。
+
+rbenv本身是一个ruby的管理工具，能够管理系统中不同版本的ruby。
 ```
 git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
@@ -36,14 +37,18 @@ source ~/.bashrc
 type rbenv | head -1
 ```
 若最后的输出结果为“rbenv is a function.”则说明rbenv安装成功。
-2.安装ruby-build插件。rbenv只是管理工具，需要借助于ruby-build这个插件来编译和安装ruby。
+2. 安装ruby-build插件。
+
+rbenv只是管理工具，需要借助于ruby-build这个插件来编译和安装ruby。
 ```
 git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
 echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 网上有些教程说还需要安装rbenv-gem-rehash插件，其实是多余的步骤。因为这个插件已经被官方废弃，插件提供的功能现在已经包含在rbenv core中。
-3.安装ruby、gems。这里我们安装目前最新版本2.4.1的ruby。
+3. 安装ruby、gems。
+
+这里我们安装目前最新版本2.4.1。
 ```
 rbenv install 2.4.1
 rbenv global 2.4.1
@@ -51,11 +56,11 @@ ruby -v
 gem install bundle
 ```
 ### 安装jekyll
-1.安装jekyll
+1. 安装jekyll
 ```
 gem install jekyll
 ```
-2.检查jekyll是否安装成功。
+2. 检查jekyll是否安装成功。
 ```
 jekyll -v
 jekyll new test-site
@@ -65,9 +70,9 @@ jekyll serve
 然后访问localhost:4000网址看看能否顺利打开。
 
 ## 更换网易云跟帖系统
-1.注册网易云跟帖网站并进入到后台。
-2.设置站点信息。
-3.自定义评论系统的皮肤和提示信息。
-4.获取WEB代码并添加到博客的_layouts/post.html文件中。
+1. 注册网易云跟帖网站并进入到后台。
+2. 设置站点信息。
+3. 自定义评论系统的皮肤和提示信息。
+4. 获取WEB代码并添加到博客的_layouts/post.html文件中。
 
 终于换好了，希望网易云跟帖能多坚持几年，只是我之前的那些评论数据再也找不到了。
